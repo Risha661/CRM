@@ -1,6 +1,6 @@
 'use strict';
 
-const modalH2 = document.querySelectorAll('.modal-title');
+const modalH2 = document.querySelector('.cms__title');
 console.log(modalH2);
 
 const modalForm = document.querySelector('.modal__form');
