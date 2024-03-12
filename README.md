@@ -1,2 +1,1 @@
-# CRM
-Для работы со 2 модулем в METHED
+# cms-layout
