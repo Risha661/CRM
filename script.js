@@ -112,3 +112,19 @@ function renderGoods(goods) {
 };
 
 renderGoods(goods);
+
+document.querySelector('.panel__add-goods').addEventListener('click', () => {
+  document.querySelector('.overlay').classList.add('active');
+});
+
+document.querySelector('.overlay').addEventListener('click', () => {
+  document.querySelector('.overlay').classList.remove('active');
+});
+
+document.querySelector('.overlay__modal').addEventListener('click', event => {
+  event.stopPropagation();
+});
+
+document.querySelector('.modal__close').addEventListener('click', () => {
+  document.querySelector('.overlay').classList.remove('active');
+});
