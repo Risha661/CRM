@@ -121,9 +121,17 @@ document.querySelector('.overlay').addEventListener('click', () => {
   document.querySelector('.overlay').classList.remove('active');
 });
 
-document.querySelector('.overlay__modal').addEventListener('click', event => {
-  event.stopPropagation();
-});
+document.querySelector('body').addEventListener('click', e => {
+  const target = e.target;
+
+  if (target.classList.contains('overlay__modal')) {
+    document.querySelector('.overlay').classList.add('active');
+  }
+}); // Реализация закрытия модального окна по клику вне окна без stopPropagation вместо кода в комментах ниже
+
+// document.querySelector('.overlay__modal').addEventListener('click', event => {
+//   event.stopPropagation();
+// });
 
 document.querySelector('.modal__close').addEventListener('click', () => {
   document.querySelector('.overlay').classList.remove('active');
