@@ -127,7 +127,8 @@ document.querySelector('body').addEventListener('click', e => {
   if (target.classList.contains('overlay__modal')) {
     document.querySelector('.overlay').classList.add('active');
   }
-}); // Реализация закрытия модального окна по клику вне окна без stopPropagation вместо кода в комментах ниже
+});
+// Реализация закрытия модального окна по клику вне окна без stopPropagation вместо кода в комментах ниже
 
 // document.querySelector('.overlay__modal').addEventListener('click', event => {
 //   event.stopPropagation();
@@ -136,3 +137,24 @@ document.querySelector('body').addEventListener('click', e => {
 document.querySelector('.modal__close').addEventListener('click', () => {
   document.querySelector('.overlay').classList.remove('active');
 });
+
+document.querySelector('.goods__table-wrapper').addEventListener('click', e => {
+  const target = e.target;
+
+  if (target.classList.contains('table__btn_del')) {
+    const row = target.closest('tr');
+    if (row) {
+      const id = parseInt(row.querySelector('.table__cell-id').textContent.replace('id: ', ''));
+      row.remove();
+
+      const index = goods.findIndex(item => item.id === id);
+      if (index !== -1) {
+        goods.splice(index, 1);
+      } // Удалила данные из массива объектов goods
+    }
+
+    console.log(row);
+    console.log(goods);
+  }
+});
+// Реализация удаления строки tr при нажатии на кнопку "Удалить"
