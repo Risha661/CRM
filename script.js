@@ -1,17 +1,4 @@
-// 'use strict';
-
-// const modalH2 = document.querySelector('.modal__title');
-// console.log(modalH2);
-
-// const modalForm = document.querySelector('.modal__form');
-// console.log(modalForm);
-
-// const modalCheckbox = document.querySelector('.modal__checkbox');
-// console.log(modalCheckbox);
-
-// const modalInput = document.querySelector('.modal__input_discount');
-// console.log(modalInput);
-
+'use strict';
 document.querySelector('.overlay').classList.remove('active');
 
 const obj = {
@@ -31,8 +18,8 @@ const goods = [
     category: 'Смартфоны',
     unit: 'шт',
     quantity: 20,
-    price: '$500',
-    total: '$12000',
+    price: '500',
+    total: '12000',
   },
   {
     id: 4242423434344,
@@ -40,13 +27,15 @@ const goods = [
     category: 'Игрушки',
     unit: 'шт',
     quantity: 1,
-    price: '$4000',
-    total: '$1000',
+    price: '4000',
+    total: '1000',
   },
 ];
 
-function createRow(obj) {
-  let index = 3;
+
+function createRow(obj, totalPrice) {
+  let index = obj.length;
+  // obj.splice(index, 0, goods);
 
   const row = document.createElement('tr');
 
@@ -64,12 +53,18 @@ function createRow(obj) {
       spanCell.textContent = `id: ${obj['id']}`;
       cell.appendChild(spanCell);
       cell.appendChild(document.createTextNode(obj[key]));
+    } else if (key === 'price') {
+      cell.textContent = `$ ${obj['price']}`;
+    } else if (key === 'total') {
+      const a = `${obj['price']}` * `${obj['quantity']}`;
+      cell.textContent = `$ ${a}`;
     } else if (key === 'category') {
       cell.classList.add('table__cell_left');
       cell.textContent = obj[key];
     } else {
       cell.textContent = obj[key];
     }
+
     row.appendChild(cell);
   }
 
@@ -93,6 +88,8 @@ function createRow(obj) {
   };
 };
 
+
+
 function renderGoods(goods) {
   const table = document.querySelector('.table__body');
 
@@ -108,44 +105,81 @@ function renderGoods(goods) {
     console.log('Количество строк в таблице:' + rowCount);
   });
 
-  return table;
+  return {
+    table,
+    list: table.tbody,
+  }
 };
 
 renderGoods(goods);
 
-document.querySelector('.panel__add-goods').addEventListener('click', () => {
-  document.querySelector('.overlay').classList.add('active');
+const btnAdd = document.querySelector('.panel__add-goods');
+const overlayForm = document.querySelector('.overlay');
+btnAdd.addEventListener('click', () => {
+  overlayForm.classList.add('active');
+
+  function generateRandomId() {
+    let id = '';
+    const digits = '0123456789';
+    const idLength = 14;
+
+    for (let i = 0; i < idLength; i++) {
+        id += digits.charAt(Math.floor(Math.random() * digits.length));
+    }
+
+    return id;
+  };
+
+  const randomId = generateRandomId();
+  const vendorCode = document.querySelector('.vendor-code__id');
+  vendorCode.textContent = randomId;
 });
 
-// document.querySelector('.overlay').addEventListener('click', () => {
-//   document.querySelector('.overlay').classList.remove('active');
-// });
-
-document.querySelector('.overlay').addEventListener('click', e => {
+overlayForm.addEventListener('click', e => {
   const target = e.target;
 
   if (target.classList.contains('overlay')) {
-    document.querySelector('.overlay').classList.remove('active');
+    overlayForm.classList.remove('active');
   }
 });
 
-// document.querySelector('body').addEventListener('click', e => {
-//   const target = e.target;
+document.querySelector('.modal__checkbox').addEventListener('click', e => {
+  const discountCountInput = document.querySelector('.modal__input_discount');
+  const target = e.target;
+  discountCountInput.removeAttribute('disabled');
 
-//   if (target.classList.contains('overlay__modal')) {
-//     document.querySelector('.overlay').classList.add('active');
-//   }
-// });
+  if (target.checked) {
+    discountCountInput.removeAttribute('disabled');
+  } else {
+    discountCountInput.setAttribute('disabled', 'disabled');
+    discountCountInput.value = '';
+  }
+});
 
-// Реализация закрытия модального окна по клику вне окна без stopPropagation вместо кода в комментах ниже
+// const inputFields = document.querySelectorAll('.modal__input');
+//   inputFields.forEach(function(input) {
+//     input.setAttribute('required', 'required');
+//   }); //реализация обязательного заполнения всех полей формы
 
-// document.querySelector('.overlay__modal').addEventListener('click', event => {
-//   event.stopPropagation();
-// });
+const units = document.getElementById('units');
+units.type = 'text';
+units.classList.add('.table__cell_left');
+const count = document.getElementById('count');
+count.type = 'number';
+const price = document.getElementById('price');
+price.type = 'number';
+const discount = document.querySelector('.modal__input_discount');
+discount.type = 'number';
+
+
+const closeModalControl = () => {
+  document.querySelector('.overlay').classList.remove('active');
+}
 
 document.querySelector('.modal__close').addEventListener('click', () => {
-  document.querySelector('.overlay').classList.remove('active');
+  closeModalControl();
 });
+
 
 document.querySelector('.goods__table-wrapper').addEventListener('click', e => {
   const target = e.target;
@@ -166,4 +200,34 @@ document.querySelector('.goods__table-wrapper').addEventListener('click', e => {
     console.log(goods);
   }
 });
-// Реализация удаления строки tr при нажатии на кнопку "Удалить"
+
+const form = document.querySelector('.modal__form');
+
+const sentData = data => console.log(data);
+
+const formControl = (form, randomId) => {
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+
+    const newGood = Object.fromEntries(formData);
+    if (newGood['id'] === 'id') {
+      newGood['id'] = randomId;
+    }
+
+
+    const index = goods.length;
+    goods.splice(index, 0, newGood);
+
+    renderGoods(goods);
+
+    form.reset();
+
+    document.querySelector('.modal__submit').addEventListener('click', () => {
+      document.querySelector('.overlay').classList.remove('active');
+    });
+
+  });
+};
+
+formControl(form);
