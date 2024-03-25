@@ -33,7 +33,7 @@ const goods = [
 ];
 
 
-function createRow(obj, totalPrice) {
+function createRow(obj) {
   let index = obj.length;
   // obj.splice(index, 0, goods);
 
@@ -94,7 +94,7 @@ function renderGoods(goods) {
   const table = document.querySelector('.table__body');
 
   let rowIndex = 2;
-  goods.forEach((obj) => {
+  goods.forEach((obj, index) => {
     const createRowWithIndex = createRow(obj);
     const row = createRowWithIndex();
     rowIndex++;
@@ -118,22 +118,35 @@ const overlayForm = document.querySelector('.overlay');
 btnAdd.addEventListener('click', () => {
   overlayForm.classList.add('active');
 
-  function generateRandomId() {
-    let id = '';
-    const digits = '0123456789';
-    const idLength = 14;
 
-    for (let i = 0; i < idLength; i++) {
-        id += digits.charAt(Math.floor(Math.random() * digits.length));
-    }
-
-    return id;
-  };
-
-  const randomId = generateRandomId();
-  const vendorCode = document.querySelector('.vendor-code__id');
-  vendorCode.textContent = randomId;
+  const modalId = document.querySelector('.vendor-code__id');
+  modalId.textContent = generateId(goods);
 });
+
+// function generateRandomId() {
+//   let id = '';
+//   const digits = '0123456789';
+//   const idLength = 14;
+
+//   for (let i = 0; i < idLength; i++) {
+//       id += digits.charAt(Math.floor(Math.random() * digits.length));
+//   }
+
+//   return id;
+// };
+
+// const vendorCode = document.querySelector('.vendor-code__id');
+// vendorCode.textContent = generateRandomId();
+
+const generateId = obj => {
+  const randomId = Math.floor(Math.random() * 1000000000);
+  obj.forEach(item => {
+    if (item.id === randomId) {
+      generateId(obj);
+    }
+  });
+  return randomId;
+};
 
 overlayForm.addEventListener('click', e => {
   const target = e.target;
@@ -205,21 +218,20 @@ const form = document.querySelector('.modal__form');
 
 const sentData = data => console.log(data);
 
-const formControl = (form, randomId) => {
+const vendorCode = document.querySelector('.vendor-code__id');
+vendorCode.textContent = generateRandomId();
+
+const formControl = (form, vendorCode) => {
   form.addEventListener('submit', e => {
     e.preventDefault();
     const formData = new FormData(e.target);
 
     const newGood = Object.fromEntries(formData);
-    if (newGood['id'] === 'id') {
-      newGood['id'] = randomId;
-    }
+    newGood['id'] = modalId.textContent;
 
+    goods.push(newGood);
 
-    const index = goods.length;
-    goods.splice(index, 0, newGood);
-
-    renderGoods(goods);
+    renderGoods(newGood);
 
     form.reset();
 
