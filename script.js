@@ -31,8 +31,8 @@ const goods = [
     category: 'Смартфоны',
     unit: 'шт',
     quantity: 20,
-    price: '$500',
-    total: '$12000',
+    price: '500',
+    total: '',
   },
   {
     id: 4242423434344,
@@ -40,13 +40,13 @@ const goods = [
     category: 'Игрушки',
     unit: 'шт',
     quantity: 1,
-    price: '$4000',
-    total: '$1000',
+    price: '4000',
+    total: '',
   },
 ];
 
 function createRow(obj) {
-  let index = 3;
+  let index = obj.length + 1;
 
   const row = document.createElement('tr');
 
@@ -67,6 +67,10 @@ function createRow(obj) {
     } else if (key === 'category') {
       cell.classList.add('table__cell_left');
       cell.textContent = obj[key];
+    } else if (key === 'price') {
+      cell.textContent = `$ ${obj['price']}`;
+    } else if (key === 'total') {
+      cell.textContent = `$ ${obj['price'] * obj['quantity']}`;
     } else {
       cell.textContent = obj[key];
     }
@@ -96,7 +100,7 @@ function createRow(obj) {
 function renderGoods(goods) {
   const table = document.querySelector('.table__body');
 
-  let rowIndex = 2;
+  let rowIndex = table.children.length + 1;
   goods.forEach((obj) => {
     const createRowWithIndex = createRow(obj);
     const row = createRowWithIndex();
@@ -108,44 +112,79 @@ function renderGoods(goods) {
     console.log('Количество строк в таблице:' + rowCount);
   });
 
-  return table;
+  return {
+    table,
+  }
 };
 
 renderGoods(goods);
 
-document.querySelector('.panel__add-goods').addEventListener('click', () => {
-  document.querySelector('.overlay').classList.add('active');
+const btnAdd = document.querySelector('.panel__add-goods');
+const overlayForm = document.querySelector('.overlay');
+btnAdd.addEventListener('click', () => {
+  overlayForm.classList.add('active');
+
+  function generateRandomId() {
+    let id = '';
+    const digits = '0123456789';
+    const idLength = 14;
+
+    for (let i = 0; i < idLength; i++) {
+        id += digits.charAt(Math.floor(Math.random() * digits.length));
+    }
+
+    return id;
+  };
+
+  const randomId = generateRandomId();
+  const vendorCode = document.querySelector('.vendor-code__id');
+  vendorCode.textContent = randomId;
 });
 
-// document.querySelector('.overlay').addEventListener('click', () => {
-//   document.querySelector('.overlay').classList.remove('active');
-// });
-
-document.querySelector('.overlay').addEventListener('click', e => {
+overlayForm.addEventListener('click', e => {
   const target = e.target;
 
   if (target.classList.contains('overlay')) {
-    document.querySelector('.overlay').classList.remove('active');
+    overlayForm.classList.remove('active');
   }
 });
 
-// document.querySelector('body').addEventListener('click', e => {
-//   const target = e.target;
+document.querySelector('.modal__checkbox').addEventListener('click', e => {
+  const discountCountInput = document.querySelector('.modal__input_discount');
+  const target = e.target;
+  discountCountInput.removeAttribute('disabled');
+  if (target.checked) {
+    discountCountInput.removeAttribute('disabled');
+  } else {
+    discountCountInput.setAttribute('disabled', 'disabled');
+    discountCountInput.value = '';
+  }
+});
 
-//   if (target.classList.contains('overlay__modal')) {
-//     document.querySelector('.overlay').classList.add('active');
-//   }
-// });
+// const inputFields = document.querySelectorAll('.modal__input');
+//   inputFields.forEach(function(input) {
+//     input.setAttribute('required', 'required');
+//   }); //реализация обязательного заполнения всех полей формы
 
-// Реализация закрытия модального окна по клику вне окна без stopPropagation вместо кода в комментах ниже
+const units = document.getElementById('units');
+units.type = 'text';
+units.classList.add('.table__cell_left');
+const count = document.getElementById('count');
+count.type = 'number';
+const price = document.getElementById('price');
+price.type = 'number';
+const discount = document.querySelector('.modal__input_discount');
+discount.type = 'number';
 
-// document.querySelector('.overlay__modal').addEventListener('click', event => {
-//   event.stopPropagation();
-// });
+
+const closeModalControl = () => {
+  document.querySelector('.overlay').classList.remove('active');
+}
 
 document.querySelector('.modal__close').addEventListener('click', () => {
-  document.querySelector('.overlay').classList.remove('active');
+  closeModalControl();
 });
+
 
 document.querySelector('.goods__table-wrapper').addEventListener('click', e => {
   const target = e.target;
@@ -166,4 +205,27 @@ document.querySelector('.goods__table-wrapper').addEventListener('click', e => {
     console.log(goods);
   }
 });
-// Реализация удаления строки tr при нажатии на кнопку "Удалить"
+
+const form = document.querySelector('.modal__form');
+
+const sentData = data => console.log(data);
+
+const formControl = (form) => {
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+
+    const newGood = Object.fromEntries(formData);
+
+    renderGoods(newGood);
+
+    form.reset();
+
+    document.querySelector('.modal__submit').addEventListener('click', () => {
+      document.querySelector('.overlay').classList.remove('active');
+    });
+
+  });
+};
+
+formControl(form);
