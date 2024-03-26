@@ -24,7 +24,25 @@ const obj = {
   total: 15000,
 };
 
-const goods = [
+const goods = [{
+  id: '24601654816512',
+  name: 'Телевизор DEXP',
+  category: 'Техника для дома',
+  units: 'шт',
+  count: 15,
+  price: 1000,
+  total: 15000,
+  },
+  {
+    id: 24601654816512,
+    name: 'Навигационная система Soundmax',
+    category: 'Техника для дома',
+    units: 'шт',
+    count: 5,
+    price: '100',
+    total: '',
+    discount: 0,
+  },
   {
     id: 34234353524553,
     name: 'Смартфон Xiaomi 11T 8/128GB',
@@ -33,6 +51,7 @@ const goods = [
     count: 20,
     price: '500',
     total: '',
+    discount: 0,
   },
   {
     id: 4242423434344,
@@ -42,11 +61,14 @@ const goods = [
     count: 1,
     price: '4000',
     total: '',
+    discount: 0,
   },
+
 ];
-const createRow = ({ index, id, name, category, units, count, price }) => {
+
+const createRow = ({index, id, name, category, units, count, price}) => {
   return `
-  <tr>
+      <tr>
     <td class="table__cell">${index}</td>
     <td class="table__cell table__cell_left table__cell_name data-id="${id}">
       <span class="table__cell-id">ID: ${id}</span>
@@ -62,23 +84,67 @@ const createRow = ({ index, id, name, category, units, count, price }) => {
       <button class="table__btn table__btn_del"></button>
     </td>
   </tr>
-  `;
-}
+  `
+};
+
 const generateRandomId = () => {
   return new Date().getTime().toString('14');
 };
+
 const renderGoods = (goods) => {
   const table = document.querySelector('.table__body');
   let createHtml = '';
-  table.innerHTML = createHtml;
+
   goods.forEach((obj, index) => {
-    createHtml += createRow({...obj, ...{index: index}});
+    createHtml += createRow({...obj, ...{index: index + 1}});
   });
+
   table.innerHTML = createHtml;
 };
+
+const calculateFormTotal = () => {
+  const count = document.getElementById('count');
+  const price = document.getElementById('price');
+  const discount = document.querySelector('.modal__input_discount');
+  const countInput = count.value;
+  const priceInput = price.value;
+  const discountInput = discount.value;
+
+ if (!isNaN(priceInput) && !isNaN(discountInput) && !isNaN(countInput)) {
+  const totalPrice = priceInput * (1 - discountInput / 100) * countInput;
+  modalTotalPrice.textContent = `$ ${totalPrice}`;
+ } else {
+  modalTotalPrice.textContent = 'Некорректные данные';
+ }
+ return modalTotalPrice();
+};
+
+
+
+const calculateTableTotalPrice = () => {
+  let table = document.querySelector('.table__body');
+  let totalSum = 0;
+
+  for (let i = 0; i < table.rows.length; i++) {
+      const count = parseFloat(table.rows[i].querySelectorAll('.table__cell')[4].textContent);
+      const price = parseFloat(table.rows[i].querySelectorAll('.table__cell')[5].textContent.slice(1)); // Удаляем знак доллара перед ценой
+      const cellTotal = count * price;
+      totalSum += cellTotal;
+  }
+
+  return totalSum.toFixed(2);
+}
+
+const totalSumColumn = calculateTableTotalPrice(goods);
+console.log('Total sum of the column: $' + totalSumColumn);
+
+
+
+
+
 const closeModalControl = () => {
   document.querySelector('.overlay').classList.remove('active');
-}
+};
 
 const btnAdd = document.querySelector('.panel__add-goods');
 const overlayForm = document.querySelector('.overlay');
@@ -151,21 +217,34 @@ document.querySelector('.goods__table-wrapper').addEventListener('click', e => {
     }
   }
 });
+const modalTotalPrice = document.querySelector('.modal__total-price');
+modalTotalPrice.textContent = '$ 0.00';
+const cmsTotalPrice = document.querySelector('.cms__total-price');
+cmsTotalPrice.textContent = totalSumColumn;
 
 const form = document.querySelector('.modal__form');
 
 const sentData = data => console.log(data);
 
-const formControl = (form, randomId) => {
+const formControl = (form) => {
   form.addEventListener('submit', e => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const newGood = Object.fromEntries(formData);
-    //rascheti s uchetom discount
+    newGood['id'] = vendorCode.textContent;
+    calculateFormTotal();
     goods.push(newGood);
     renderGoods(goods);
     form.reset();
     document.querySelector('.modal__submit').addEventListener('click', closeModalControl);
+  });
+
+  form.addEventListener('focusout', e => {
+    const target = e.target;
+    if (target === price || target === count ||
+      target === discount) {
+        calculateFormTotal();
+    }
   });
 };
 
