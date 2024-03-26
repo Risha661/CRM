@@ -24,24 +24,24 @@ const obj = {
   total: 15000,
 };
 
-const goods = [{
-  id: '24601654816512',
-  name: 'Телевизор DEXP',
-  category: 'Техника для дома',
-  units: 'шт',
-  count: 15,
-  price: 1000,
-  total: 15000,
-  },
+const goods = [
   {
-    id: 24601654816512,
+    id: '24601654816512',
     name: 'Навигационная система Soundmax',
     category: 'Техника для дома',
     units: 'шт',
     count: 5,
-    price: '100',
+    price: 100,
     total: '',
-    discount: 0,
+  },
+  {
+    id: '24601654816512',
+    name: 'Телевизор DEXP',
+    category: 'Техника для дома',
+    units: 'шт',
+    count: 15,
+    price: 1000,
+    total: '',
   },
   {
     id: 34234353524553,
@@ -63,12 +63,11 @@ const goods = [{
     total: '',
     discount: 0,
   },
-
 ];
 
 const createRow = ({index, id, name, category, units, count, price}) => {
   return `
-      <tr>
+  <tr>
     <td class="table__cell">${index}</td>
     <td class="table__cell table__cell_left table__cell_name data-id="${id}">
       <span class="table__cell-id">ID: ${id}</span>
@@ -98,7 +97,6 @@ const renderGoods = (goods) => {
   goods.forEach((obj, index) => {
     createHtml += createRow({...obj, ...{index: index + 1}});
   });
-
   table.innerHTML = createHtml;
 };
 
@@ -116,31 +114,32 @@ const calculateFormTotal = () => {
  } else {
   modalTotalPrice.textContent = 'Некорректные данные';
  }
- return modalTotalPrice();
+ return modalTotalPrice;
 };
 
-
-
-const calculateTableTotalPrice = () => {
-  let table = document.querySelector('.table__body');
+const calculateTableTotalPrice = (goods) => {
   let totalSum = 0;
 
-  for (let i = 0; i < table.rows.length; i++) {
-      const count = parseFloat(table.rows[i].querySelectorAll('.table__cell')[4].textContent);
-      const price = parseFloat(table.rows[i].querySelectorAll('.table__cell')[5].textContent.slice(1)); // Удаляем знак доллара перед ценой
-      const cellTotal = count * price;
-      totalSum += cellTotal;
-  }
+  goods.forEach((item) => {
+    const count = parseFloat(item.count);
+    const price = parseFloat(item.price);
+    const cellTotal = count * price;
+    totalSum += cellTotal;
+  });
 
   return totalSum.toFixed(2);
-}
+};
+
+const updateTotalSum = () => {
+  const totalSumColumn = calculateTableTotalPrice(goods);
+
+  const cmsTotalPrice = document.querySelector('.cms__total-price');
+  cmsTotalPrice.textContent = '$' + totalSumColumn;
+
+  return cmsTotalPrice.textContent;
+};
 
 const totalSumColumn = calculateTableTotalPrice(goods);
-console.log('Total sum of the column: $' + totalSumColumn);
-
-
-
-
 
 const closeModalControl = () => {
   document.querySelector('.overlay').classList.remove('active');
@@ -148,8 +147,6 @@ const closeModalControl = () => {
 
 const btnAdd = document.querySelector('.panel__add-goods');
 const overlayForm = document.querySelector('.overlay');
-
-
 
 btnAdd.addEventListener('click', () => {
   overlayForm.classList.add('active');
@@ -178,10 +175,10 @@ document.querySelector('.modal__checkbox').addEventListener('click', e => {
   }
 });
 
-// const inputFields = document.querySelectorAll('.modal__input');
-//   inputFields.forEach(function(input) {
-//     input.setAttribute('required', 'required');
-//   }); //реализация обязательного заполнения всех полей формы
+const inputFields = document.querySelectorAll('.modal__input');
+  inputFields.forEach(function(input) {
+    input.setAttribute('required', 'required');
+  }); //реализация обязательного заполнения всех полей формы
 
 const units = document.getElementById('units');
 units.type = 'text';
@@ -193,13 +190,9 @@ price.type = 'number';
 const discount = document.querySelector('.modal__input_discount');
 discount.type = 'number';
 
-
-
-
 document.querySelector('.modal__close').addEventListener('click', () => {
   closeModalControl();
 });
-
 
 document.querySelector('.goods__table-wrapper').addEventListener('click', e => {
   const target = e.target;
@@ -233,8 +226,10 @@ const formControl = (form) => {
     const newGood = Object.fromEntries(formData);
     newGood['id'] = vendorCode.textContent;
     calculateFormTotal();
+
     goods.push(newGood);
     renderGoods(goods);
+    updateTotalSum();
     form.reset();
     document.querySelector('.modal__submit').addEventListener('click', closeModalControl);
   });
@@ -250,3 +245,4 @@ const formControl = (form) => {
 
 formControl(form);
 renderGoods(goods);
+updateTotalSum();
