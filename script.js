@@ -231,7 +231,7 @@ const formControl = (form) => {
     renderGoods(goods);
     updateTotalSum();
     form.reset();
-    document.querySelector('.modal__submit').addEventListener('click', closeModalControl);
+    document.querySelector('.modal__submit').addEventListener('click', closeModalControl());
   });
 
   form.addEventListener('focusout', e => {
