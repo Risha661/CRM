@@ -2,7 +2,7 @@ const createRow = ({index, id, name, category, units, count, price}) => {
   return `
   <tr>
     <td class="table__cell">${index}</td>
-    <td class="table__cell table__cell_left table__cell_name data-id="${id}">
+    <td class="table__cell table__cell_left table__cell_name" data-id="${id}">
       <span class="table__cell-id">ID: ${id}</span>
       ${name}</td>
     <td class="table__cell table__cell_left">${category}</td>

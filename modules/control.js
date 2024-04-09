@@ -21,21 +21,18 @@ const goodTableWrapper = document.querySelector('.goods__table-wrapper').addEven
 
   if (target.classList.contains('table__btn_del')) {
     const row = target.closest('tr');
-      if (row) {
-        const id = parseInt(row.querySelector('.table__cell-id').textContent.replace('ID: ', ''));
-        row.remove();
-        const index = goods.findIndex(item => Number(item.id) === id);
-        console.log(index + " " + id);
-        if (index !== -1) {
-
-          goods.splice(index, 1);
-          // const rows = document.querySelectorAll('.goods__table-body tr');
-          renderGoods(goods);
-
-        } // Удалила данные из массива объектов goods
+    if (row) {
+      const id = row.querySelector('.table__cell_name').dataset.id;
+      row.remove();
+      const index = goods.findIndex(item => item.id === id);
+      console.log(index + " " + id);
+      if (index !== -1) {
+        goods.splice(index, 1);
+        renderGoods(goods);
       }
     }
-  });
+  }
+});
 
 const modalCheckbox = document.querySelector('.modal__checkbox').addEventListener('click', e => {
   const discountCountInput = document.querySelector('.modal__input_discount');

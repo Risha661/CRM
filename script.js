@@ -16,37 +16,36 @@ import {vendorCode} from './modules/const.js';
 
 (function init() {
 
-document.querySelector('.overlay').classList.remove('active');
+  document.querySelector('.overlay').classList.remove('active');
 
-btnAdd.addEventListener('click', () => {
-  overlayForm.classList.add('active');
-  const randomId = generateRandomId();
-  vendorCode.textContent = randomId;
-});
+  btnAdd.addEventListener('click', () => {
+    overlayForm.classList.add('active');
+    const randomId = generateRandomId();
+    vendorCode.textContent = randomId;
+  });
 
-overlayForm.addEventListener('click', e => {
-  const target = e.target;
+  overlayForm.addEventListener('click', e => {
+    const target = e.target;
 
-  if (target.classList.contains('overlay')) {
-    overlayForm.classList.remove('active');
-  }
-});
+    if (target.classList.contains('overlay')) {
+      overlayForm.classList.remove('active');
+    }
+  });
 
-inputFields.forEach(function(input) {
-    input.setAttribute('required', 'required');
-});
+  inputFields.forEach(function(input) {
+      input.setAttribute('required', 'required');
+  });
 
-units.type = 'text';
-units.classList.add('.table__cell_left');
-count.type = 'number';
-price.type = 'number';
-discount.type = 'number';
+  units.type = 'text';
+  units.classList.add('.table__cell_left');
+  count.type = 'number';
+  price.type = 'number';
+  discount.type = 'number';
 
-modalTotalPrice.textContent = '$ 0.00';
-cmsTotalPrice.textContent = totalSumColumn;
+  modalTotalPrice.textContent = '$ 0.00';
+  cmsTotalPrice.textContent = totalSumColumn;
 
-formControl(form);
-renderGoods(goods);
-updateTotalSum();
+  formControl(form);
+  renderGoods(goods);
+  updateTotalSum();
 }());
-
