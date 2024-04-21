@@ -16,6 +16,8 @@ const modalClose = document.querySelector('.modal__close').addEventListener('cli
   closeModalControl();
 });
 
+
+
 const goodTableWrapper = document.querySelector('.goods__table-wrapper').addEventListener('click', e => {
   const target = e.target;
 
@@ -35,6 +37,7 @@ const goodTableWrapper = document.querySelector('.goods__table-wrapper').addEven
 });
 
 const modalCheckbox = document.querySelector('.modal__checkbox').addEventListener('click', e => {
+
   const discountCountInput = document.querySelector('.modal__input_discount');
   const target = e.target;
   discountCountInput.removeAttribute('disabled');
