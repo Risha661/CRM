@@ -1,21 +1,21 @@
-import {modalTotalPrice} from './const.js'
-import {goods} from './goodsMassive.js';
+import { modalTotalPrice } from "./const.js";
+import { goods } from "./goodsMassive.js";
 
 const calculateFormTotal = () => {
-  const count = document.getElementById('count');
-  const price = document.getElementById('price');
-  const discount = document.querySelector('.modal__input_discount');
+  const count = document.getElementById("count");
+  const price = document.getElementById("price");
+  const discount = document.querySelector(".modal__input_discount");
   const countInput = count.value;
   const priceInput = price.value;
   const discountInput = discount.value;
 
- if (!isNaN(priceInput) && !isNaN(discountInput) && !isNaN(countInput)) {
-  const totalPrice = priceInput * (1 - discountInput / 100) * countInput;
-  modalTotalPrice.textContent = `$ ${totalPrice}`;
- } else {
-  modalTotalPrice.textContent = 'Некорректные данные';
- }
- return modalTotalPrice;
+  if (!isNaN(priceInput) && !isNaN(discountInput) && !isNaN(countInput)) {
+    const totalPrice = priceInput * (1 - discountInput / 100) * countInput;
+    modalTotalPrice.textContent = `$ ${totalPrice}`;
+  } else {
+    modalTotalPrice.textContent = "Некорректные данные";
+  }
+  return modalTotalPrice;
 };
 
 const calculateTableTotalPrice = (goods) => {
@@ -34,12 +34,10 @@ const calculateTableTotalPrice = (goods) => {
 const updateTotalSum = () => {
   const totalSumColumn = calculateTableTotalPrice(goods);
 
-  const cmsTotalPrice = document.querySelector('.cms__total-price');
-  cmsTotalPrice.textContent = '$' + totalSumColumn;
+  const cmsTotalPrice = document.querySelector(".cms__total-price");
+  cmsTotalPrice.textContent = "$" + totalSumColumn;
 
   return cmsTotalPrice.textContent;
 };
 
-export {calculateFormTotal,
-  calculateTableTotalPrice,
-  updateTotalSum};
+export { calculateFormTotal, calculateTableTotalPrice, updateTotalSum };

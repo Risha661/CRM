@@ -1,4 +1,4 @@
-const createRow = ({index, id, name, category, units, count, price}) => {
+const createRow = ({ index, id, name, category, units, count, price }) => {
   return `
   <tr>
     <td class="table__cell">${index}</td>
@@ -16,7 +16,7 @@ const createRow = ({index, id, name, category, units, count, price}) => {
       <button class="table__btn table__btn_del"></button>
     </td>
   </tr>
-  `
+  `;
 };
 
-export {createRow};
+export { createRow };

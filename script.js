@@ -1,68 +1,81 @@
-import {totalSumColumn, btnAdd, overlayForm,
-  inputFields, units, count, price, discount, modalTotalPrice, cmsTotalPrice,
-  form} from './modules/const.js'
+import {
+  totalSumColumn,
+  btnAdd,
+  overlayForm,
+  inputFields,
+  units,
+  count,
+  price,
+  discount,
+  modalTotalPrice,
+  cmsTotalPrice,
+  form,
+} from "./modules/const.js";
 
-import {generateRandomId} from './modules/generate.js';
+import { generateRandomId } from "./modules/generate.js";
 
-import {renderGoods} from './modules/render.js';
+import { renderGoods } from "./modules/render.js";
 
-import {updateTotalSum} from './modules/calculate.js';
+import { updateTotalSum } from "./modules/calculate.js";
 
-import {formControl} from './modules/control.js';
+import { formControl } from "./modules/control.js";
 
-import {goods} from './modules/goodsMassive.js';
+import { goods } from "./modules/goodsMassive.js";
 
-import {vendorCode} from './modules/const.js';
+import { vendorCode } from "./modules/const.js";
+
+import './modules/preview.js';
+
+const btnOpenImages = document.querySelectorAll(".table__btn.table__btn_pic");
 
 (function init() {
+  document.querySelector(".overlay").classList.remove("active");
 
-  document.querySelector('.overlay').classList.remove('active');
-
-  btnAdd.addEventListener('click', () => {
-    overlayForm.classList.add('active');
+  btnAdd.addEventListener("click", () => {
+    overlayForm.classList.add("active");
     const randomId = generateRandomId();
     vendorCode.textContent = randomId;
   });
 
-  overlayForm.addEventListener('click', e => {
+  overlayForm.addEventListener("click", (e) => {
     const target = e.target;
 
-    if (target.classList.contains('overlay')) {
-      overlayForm.classList.remove('active');
+    if (target.classList.contains("overlay")) {
+      overlayForm.classList.remove("active");
     }
   });
 
-  inputFields.forEach(function(input) {
-      input.setAttribute('required', 'required');
+  inputFields.forEach(function (input) {
+    input.setAttribute("required", "required");
   });
 
-  units.type = 'text';
-  units.classList.add('.table__cell_left');
-  count.type = 'number';
-  price.type = 'number';
-  discount.type = 'number';
+  units.type = "text";
+  units.classList.add(".table__cell_left");
+  count.type = "number";
+  price.type = "number";
+  discount.type = "number";
 
-  modalTotalPrice.textContent = '$ 0.00';
+  modalTotalPrice.textContent = "$ 0.00";
   cmsTotalPrice.textContent = totalSumColumn;
 
   formControl(form);
   renderGoods(goods);
   updateTotalSum();
-}());
+})();
 
-const btnOpenImages = document.querySelectorAll('.table__btn.table__btn_pic');
+btnOpenImages.forEach((btnOpenImage) => {
+  btnOpenImage.addEventListener("click", () => {
+    const picUrl =
+      "http://picsdesktop.net/autumn/800x600/PicsDesktop.net_7.jpg";
+    const screenWidth = window.screen.width;
+    const screenHeight = window.screen.height;
+    const left = (screenWidth - 800) / 2;
+    const top = (screenHeight - 600) / 2;
 
-btnOpenImages.forEach(btnOpenImage => {
-  btnOpenImage.addEventListener('click', () => {
-  const picUrl = 'http://picsdesktop.net/autumn/800x600/PicsDesktop.net_7.jpg';
-  const screenWidth = window.screen.width;
-  const screenHeight = window.screen.height;
-  const left = (screenWidth - 800) / 2;
-  const top = (screenHeight - 600) / 2;
-
-  const win = window.open(picUrl, '',  `width=800,height=600,top=${top},left=${left}`);
+    const win = window.open(
+      picUrl,
+      "",
+      `width=800,height=600,top=${top},left=${left}`
+    );
+  });
 });
-});
-
-
-
