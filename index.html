@@ -125,8 +125,21 @@
 
           <label class="modal__label modal__label_category" for="category">
             <span class="modal__text">Категория</span>
-            <input class="modal__input" type="text" name="category" id="category">
+            <input class="modal__input" type="text" name="category" id="category" list="category-list" required>
           </label>
+
+          <datalist id="category-list">
+            <option value="Мобильный телефон"></option>
+            <option value="Игрушки"></option>
+            <option value="ТВ приставка"></option>
+            <option value="Кабеля"></option>
+            <option value="Портативный транспорт"></option>
+            <option value="VR системы"></option>
+            <option value="Детский транспорт"></option>
+            <option value="Кухонная техника"></option>
+            <option value="Красота и здоровье"></option>
+            <option value="Инструмент"></option>
+          </datalist>
 
           <label class="modal__label modal__label_description" for="description">
             <span class="modal__text">Описание</span>
