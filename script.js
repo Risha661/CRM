@@ -14,8 +14,6 @@ import {
 
 import { generateRandomId } from "./modules/generate.js";
 
-import { renderGoods } from "./modules/render.js";
-
 import { updateTotalSum } from "./modules/calculate.js";
 
 import { formControl } from "./modules/control.js";
@@ -59,7 +57,7 @@ const btnOpenImages = document.querySelectorAll(".table__btn.table__btn_pic");
   cmsTotalPrice.textContent = totalSumColumn;
 
   formControl(form);
-  renderGoods(goods);
+  // renderGoods(goods);
   updateTotalSum();
 })();
 

@@ -1,3 +1,7 @@
+import './control.js';
+
+const URL = "https://blushing-motley-language.glitch.me/api/goods";
+
 const imagePreview = document.createElement("img");
 const modalFieldSet = document.querySelector(".modal__fieldset");
 const labelFile = document.querySelector(".modal__label_file");
@@ -39,19 +43,19 @@ inputFile.addEventListener("change", async () => {
   }
 });
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+// form.addEventListener("submit", async (e) => {
+//   e.preventDefault();
 
-  const formData = new FormData(form);
-  const data = Object.fromEntries(formData);
-  data.image = await toBase64(data.image);
-  console.log(data);
+//   const formData = new FormData(form);
+//   const data = Object.fromEntries(formData);
+//   data.image = await toBase64(data.image);
+//   console.log(data);
 
-  fetch("https://jsonplaceholder.typicode.com/posts", {
-    method: "post",
-    body: JSON.stringify(data),
-    headers: {
-      "Content-type": "application/json; charset=UTF-8",
-    },
-  });
-});
+//   fetch(URL, {
+//     method: "post",
+//     body: JSON.stringify(data),
+//     headers: {
+//       "Content-type": "application/json; charset=UTF-8",
+//     },
+//   });
+// });
