@@ -57,6 +57,51 @@ const fetchData = async () => {
   }
 };
 
+const fillFormWithData = async (item) => {
+  const id = document.querySelector("#item-id");
+
+  formName.value = item.title;
+  formCategory.value = item.category;
+  formUnits.value = item.units;
+  formDiscount.value = item.discount;
+  formDescription.value = item.description;
+  formCount.value = item.count;
+  formPrice.value = item.price;
+  id.value = item.id;
+};
+
+const updateGoods = async (item) => {
+  try {
+    const response = await fetch(`${apiURL}/api/goods/${item.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(item),
+    });
+    if (!response.ok) {
+      throw new Error("Failed to update goods");
+    }
+    const updatedGoods = await response.json();
+    return updatedGoods;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+const getGoods = async (itemId) => {
+  try {
+    const response = await fetch(`${apiURL}/api/goods/${itemId}`);
+    if (!response.ok) {
+      throw new Error("Goods Not Found");
+    }
+    const goods = await response.json();
+    return goods;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 const postData = async (newItem) => {
   await fetch(`${apiURL}/api/goods/`, {
     method: "POST",
@@ -104,6 +149,7 @@ export const renderGoods = (data) => {
 
 fetchData(renderGoods);
 
+const form = document.querySelector(".overlay");
 const formName = document.getElementById("name");
 const formCategory = document.getElementById("category");
 const formUnits = document.getElementById("units");
@@ -136,6 +182,25 @@ const goodTableWrapper = document
         await deleteData(id);
       }
     }
+
+    if (target.classList.contains("table__btn_edit")) {
+      const row = target.closest("tr");
+      const id = row.querySelector("#item-id").textContent;
+      await fetchData(id);
+
+      try {
+        const goods = await getGoods(id);
+        console.log(goods);
+        form.classList.add("active");
+
+        await fillFormWithData(goods);
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
   });
 
 const modalCheckbox = document
@@ -153,46 +218,61 @@ const modalCheckbox = document
   });
 
 const formControl = (form) => {
+  console.log(document.querySelector("#item-id"));
+  let itemID;
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    let itemID = generateRandomId();
-    console.log(itemID);
-    const newItem = {
-      title: formName.value,
-      category: formCategory.value,
-      units: formUnits.value,
-      description: formDescription.value,
-      count: formCount.value,
-      price: formPrice.value,
-      discount: formDiscount.value,
-      id: itemID,
-    };
 
-    console.log(newItem);
+    if (formName.textContent === "") {
+      itemID = generateRandomId();
+      console.log(itemID);
+      const newItem = {
+        title: formName.value,
+        category: formCategory.value,
+        units: formUnits.value,
+        description: formDescription.value,
+        count: formCount.value,
+        price: formPrice.value,
+        discount: formDiscount.value,
+        id: itemID,
+      };
 
-    postData(newItem);
-    const updatedData = await fetchData();
-    renderGoods(updatedData);
+      console.log(newItem);
 
-    // const btnSubmit = document.querySelector(".modal__submit");
-    // btnSubmit.addEventListener("click", (e) => {
-    //   e.preventDefault();
+      postData(newItem);
+      const updatedData = await fetchData();
+      renderGoods(updatedData);
 
-    //   renderGoods();
-    // });
+      calculateFormTotal();
+      updateTotalSum();
+      form.reset();
+      document
+        .querySelector(".modal__submit")
+        .addEventListener("click", closeModalControl());
+    }
 
-    // const formData = new FormData(e.target);
-    // const newGood = Object.fromEntries(formData);
-    // newGood["id"] = vendorCode.textContent;
-    calculateFormTotal();
+    if (formName.textContent !== "") {
+      const id = document.querySelector("#item-id").textContent;
 
-    // goods.push(newGood);
-    // renderGoods(goods);
-    updateTotalSum();
-    form.reset();
-    document
-      .querySelector(".modal__submit")
-      .addEventListener("click", closeModalControl());
+      const updatedItem = {
+        title: formName.value,
+        category: formCategory.value,
+        units: formUnits.value,
+        description: formDescription.value,
+        count: formCount.value,
+        price: formPrice.value,
+        discount: formDiscount.value,
+        id: id,
+      };
+
+      try {
+        const updatedData = await updateGoods(updatedItem);
+        console.log("Данные успешно обновлены:", updatedData);
+      } catch (error) {
+        console.error("Ошибка при обновлении данных:", error);
+      }
+      console.log(updatedItem);
+    }
   });
 
   form.addEventListener("focusout", (e) => {
