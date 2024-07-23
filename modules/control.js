@@ -1,3 +1,4 @@
+
 import "./const.js";
 import { goods } from "./goodsMassive.js";
 import "./preview.js";
@@ -5,6 +6,21 @@ import { vendorCode } from "./const.js";
 import { calculateFormTotal, updateTotalSum } from "./calculate.js";
 import "./generate.js";
 import { generateRandomId } from "./generate.js";
+import { renderGoods, updateTable } from "./render.js";
+import { displayErrorMessages } from "./error.js";
+
+import {
+  fetchData,
+  updateGoods,
+  getGoods,
+  getGoodsName,
+  postData,
+  deleteData,
+  getGoodsCategory,
+} from "./api.js";
+
+export const apiURL = "https://thoracic-marbled-paneer.glitch.me";
+export const URL = "https://thoracic-marbled-paneer.glitch.me/api/goods/";
 
 const searchForm = document.querySelector(".panel__search");
 const searchInput = document.querySelector(".panel__input");
@@ -19,51 +35,6 @@ const formPrice = document.getElementById("price");
 const id = document.querySelector("#item-id");
 let timeoutId;
 
-const apiURL = "https://thoracic-marbled-paneer.glitch.me";
-const URL = "https://thoracic-marbled-paneer.glitch.me/api/goods/";
-
-const fetchData = async () => {
-  const perPage = 20;
-  let allGoods = [];
-  let page = 1;
-  let dataAvailable = true;
-
-  try {
-    while (dataAvailable) {
-      const response = await fetch(
-        `${apiURL}/api/goods?limit=${perPage}&page=${page}`,
-        {
-          method: "GET",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          `Ошибка сети: ${response.status} ${response.statusText}`
-        );
-      }
-
-      const data = await response.json();
-
-      if (data.goods && data.goods.length > 0) {
-        allGoods = allGoods.concat(data.goods);
-        page++;
-      } else {
-        dataAvailable = false;
-      }
-    }
-
-    console.log(allGoods);
-    return allGoods;
-  } catch (error) {
-    console.error("Произошла ошибка при загрузке данных:", error.message);
-    displayErrorMessages(
-      "Не удалось загрузить данные. Пожалуйста, попробуйте позже."
-    );
-    return null;
-  }
-};
-
 const fillFormWithData = async (item) => {
   const id = document.querySelector("#item-id");
 
@@ -77,200 +48,7 @@ const fillFormWithData = async (item) => {
   id.value = item.id;
 };
 
-const displayErrorMessages = (errorMessage) => {
-  const table = document.querySelector(".table__body");
-  const errorContainer = document.createElement("div");
-
-  errorContainer.innerHTML = "";
-
-  errorContainer.style.position = "fixed";
-  errorContainer.style.top = "50%";
-  errorContainer.style.left = "50%";
-  errorContainer.style.transform = "translate(-50%, -50%)";
-  errorContainer.style.width = "400px";
-  errorContainer.style.height = "400px";
-  errorContainer.style.backgroundColor = "#F2F0F9";
-  errorContainer.style.display = "flex";
-  errorContainer.style.flexDirection = "column";
-  errorContainer.style.alignItems = "center";
-  errorContainer.style.justifyContent = "center";
-  errorContainer.style.zIndex = "1000";
-  errorContainer.style.padding = "20px";
-  errorContainer.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
-
-  const messageDiv = document.createElement("div");
-  messageDiv.textContent = errorMessage;
-  messageDiv.style.fontSize = "14px";
-  messageDiv.style.fontWeight = "500";
-
-  const closeButton = document.createElement("button");
-  closeButton.innerHTML = `
-  <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="m2 2 20 20M2 22 22 2" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg>`;
-
-  closeButton.style.position = "absolute";
-  closeButton.style.top = "10px";
-  closeButton.style.right = "10px";
-  closeButton.style.border = "none";
-  closeButton.style.backgroundColor = "transparent";
-  closeButton.style.cursor = "pointer";
-  closeButton.style.padding = "0";
-  closeButton.style.width = "auto";
-  closeButton.style.height = "auto";
-
-  closeButton.addEventListener("click", () => {
-    table.removeChild(errorContainer);
-    });
-
-  errorContainer.append(closeButton);
-  errorContainer.append(messageDiv);
-  table.append(errorContainer);
-};
-
-const updateGoods = async (item) => {
-  try {
-    const response = await fetch(`${apiURL}/api/goods/${item.id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(item),
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to update goods");
-    }
-    const updatedGoods = await response.json();
-    return updatedGoods;
-  } catch (error) {
-    displayErrorMessages(error.message);
-  }
-};
-
-const getGoods = async (itemId) => {
-  try {
-    const response = await fetch(`${apiURL}/api/goods/${itemId}`);
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Goods Not Found");
-    }
-    const goods = await response.json();
-    return goods;
-  } catch (error) {
-    displayErrorMessages(error.message);
-  }
-};
-
-const getGoodsName = async (name) => {
-  try {
-    const response = await fetch(`${apiURL}/api/goods?search=${name}`, {
-      method: "GET",
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to update goods");
-    }
-    const data = await response.json();
-
-    if (!data.goods || data.goods.length === 0) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Goods Not Found");
-    }
-    console.log(data.goods);
-    return data.goods;
-  } catch (error) {
-    displayErrorMessages(error.message);
-  }
-};
-
-const getGoodsCategory = async (name) => {
-  try {
-    const response = await fetch(`${apiURL}/api/category?search=${name}`, {
-      method: "GET",
-    });
-    if (!response.ok) {
-      throw new Error("Товары не найдены");
-    }
-    const data = await response.json();
-    console.log(data.goods);
-    return data.goods;
-  } catch (error) {
-    throw new Error(error.message);
-  }
-};
-
-const postData = async (newItem) => {
-  await fetch(`${apiURL}/api/goods/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(newItem),
-  });
-};
-
-const deleteData = async (id) => {
-  const response = await fetch(`${apiURL}/api/goods/${id}`, {
-    method: "DELETE",
-  });
-
-  const result = await response.json();
-
-  return result;
-};
-
-export const renderGoods = (data) => {
-  const table = document.querySelector(".table__body");
-
-  if (Array.isArray(data)) {
-    const goods = data.map((item) => {
-      const cardWrapper = document.createElement("tr");
-      cardWrapper.innerHTML = `
-        <td class="table__cell" id="item-id">${item.id}</td>
-        <td class="table__cell table__cell_left">${item.title}</td>
-        <td class="table__cell">${item.category}</td>
-        <td class="table__cell">${item.units}</td>
-        <td class="table__cell">${item.count}</td>
-        <td class="table__cell">$${item.count * item.price}</td>
-        <td class="table__cell table__cell_btn-wrapper">
-          <button class="table__btn table__btn_pic" data-pic="http://picsdesktop.net/autumn/800x600/PicsDesktop.net_7.jpg"></button>
-          <button class="table__btn table__btn_edit"></button>
-          <button class="table__btn table__btn_del"></button>
-        </td>`;
-      table.appendChild(cardWrapper);
-    });
-  } else {
-    displayErrorMessages("Ошибка: Данные не найдены.");
-  }
-};
-
 fetchData(renderGoods);
-
-function updateTable(data) {
-  const table = document.querySelector(".table__body");
-  table.innerHTML = "";
-
-  if (Array.isArray(data)) {
-    data.forEach((item) => {
-      const cardWrapper = document.createElement("tr");
-      cardWrapper.innerHTML = `
-        <td class="table__cell" id="item-id">${item.id}</td>
-        <td class="table__cell table__cell_left">${item.title}</td>
-        <td class="table__cell">${item.category}</td>
-        <td class="table__cell">${item.units}</td>
-        <td class="table__cell">${item.count}</td>
-        <td class="table__cell">$${(item.count * item.price).toFixed(2)}</td>
-        <td class="table__cell table__cell_btn-wrapper">
-          <button class="table__btn table__btn_pic" data-pic="http://picsdesktop.net/autumn/800x600/PicsDesktop.net_7.jpg"></button>
-          <button class="table__btn table__btn_edit"></button>
-          <button class="table__btn table__btn_del"></button>
-        </td>`;
-      table.appendChild(cardWrapper);
-    });
-  } else {
-    displayErrorMessages("Ошибка: Данные не найдены, введите корректный поисковой запрос.");
-  }
-}
 
 searchInput.addEventListener("input", (e) => {
   e.preventDefault();
@@ -283,14 +61,13 @@ searchInput.addEventListener("input", (e) => {
         const goods = await getGoodsName(name);
         updateTable(goods);
       } catch (error) {
-        console.error(error.message);
-      }
+        displayErrorMessages('По данному запросу товары не найдены. Введите корректный запрос.');      }
     } else {
       try {
         const allGoods = await fetchData();
         updateTable(allGoods);
       } catch (error) {
-        console.error(error.message);
+        displayErrorMessages('Товары не найдены.');
       }
     }
   }, 300);
@@ -421,8 +198,6 @@ const formControl = (form) => {
   });
   fetchData().then((data) => renderGoods(data));
 };
-
-displayErrorMessages();
 
 export { closeModalControl, formControl };
 export { modalClose, goodTableWrapper, modalCheckbox };

@@ -23,6 +23,7 @@ import { goods } from "./modules/goodsMassive.js";
 import { vendorCode } from "./modules/const.js";
 
 import './modules/preview.js';
+import './modules/error.js';
 
 const btnOpenImages = document.querySelectorAll(".table__btn.table__btn_pic");
 

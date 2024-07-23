@@ -1,0 +1,150 @@
+import { apiURL, URL } from "./control.js";
+
+export const fetchData = async () => {
+  const perPage = 20;
+  let allGoods = [];
+  let page = 1;
+  let dataAvailable = true;
+
+  try {
+    while (dataAvailable) {
+      const response = await fetch(
+        `${apiURL}/api/goods?limit=${perPage}&page=${page}`,
+        {
+          method: "GET",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Ошибка сети: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const data = await response.json();
+
+      if (data.goods && data.goods.length > 0) {
+        allGoods = allGoods.concat(data.goods);
+        page++;
+      } else {
+        dataAvailable = false;
+      }
+    }
+
+    console.log(allGoods);
+    return allGoods;
+  } catch (error) {
+    console.error("Произошла ошибка при загрузке данных:", error.message);
+    displayErrorMessages(
+      "Не удалось загрузить данные. Пожалуйста, попробуйте позже."
+    );
+    return null;
+  }
+};
+
+export const updateGoods = async (item) => {
+  try {
+    const response = await fetch(`${apiURL}/api/goods/${item.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(item),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to update goods");
+    }
+    const updatedGoods = await response.json();
+    return updatedGoods;
+  } catch (error) {
+    displayErrorMessages(error.message);
+  }
+};
+
+export const getGoods = async (itemId) => {
+  try {
+    const response = await fetch(`${apiURL}/api/goods/${itemId}`);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Товары не найдены");
+    }
+    const goods = await response.json();
+    return goods;
+  } catch (error) {
+    displayErrorMessages(error.message);
+  }
+};
+
+export const getGoodsName = async (name) => {
+  try {
+    const response = await fetch(`${apiURL}/api/goods?search=${name}`, {
+      method: "GET",
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Не удалось найти товар с таким наименованием");
+    }
+    const data = await response.json();
+
+    if (!data.goods || data.goods.length === 0) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Не удалось найти товары");
+    }
+    console.log(data.goods);
+    return data.goods;
+  } catch (error) {
+    displayErrorMessages(error.message);
+  }
+};
+
+export const postData = async (newItem) => {
+  try {
+    const response = await fetch(`${apiURL}/api/goods/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newItem),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Что-то пошло не так...");
+    }
+    const data = await response.json();
+  } catch (error) {
+    displayErrorMessages(error.message);
+  }
+};
+
+export const deleteData = async (id) => {
+  try {
+    const response = await fetch(`${apiURL}/api/goods/${id}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Не удалось удалить элемент.");
+    }
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    displayErrorMessages(error.message);
+  }
+};
+
+export const getGoodsCategory = async (name) => {
+  try {
+    const response = await fetch(`${apiURL}/api/category?search=${name}`, {
+      method: "GET",
+    });
+    if (!response.ok) {
+      throw new Error("Товары не найдены");
+    }
+    const data = await response.json();
+    console.log(data.goods);
+    return data.goods;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
