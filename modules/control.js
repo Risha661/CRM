@@ -36,9 +36,16 @@ const fetchData = async () => {
           method: "GET",
         }
       );
+
+      if (!response.ok) {
+        throw new Error(
+          `Ошибка сети: ${response.status} ${response.statusText}`
+        );
+      }
+
       const data = await response.json();
 
-      if (data.goods.length > 0) {
+      if (data.goods && data.goods.length > 0) {
         allGoods = allGoods.concat(data.goods);
         page++;
       } else {
@@ -49,7 +56,10 @@ const fetchData = async () => {
     console.log(allGoods);
     return allGoods;
   } catch (error) {
-    console.error("Произошла ошибка при получении данных:", error);
+    console.error("Произошла ошибка при загрузке данных:", error.message);
+    displayErrorMessages(
+      "Не удалось загрузить данные. Пожалуйста, попробуйте позже."
+    );
     return null;
   }
 };
@@ -67,6 +77,56 @@ const fillFormWithData = async (item) => {
   id.value = item.id;
 };
 
+const displayErrorMessages = (errorMessage) => {
+  const table = document.querySelector(".table__body");
+  const errorContainer = document.createElement("div");
+
+  errorContainer.innerHTML = "";
+
+  errorContainer.style.position = "fixed";
+  errorContainer.style.top = "50%";
+  errorContainer.style.left = "50%";
+  errorContainer.style.transform = "translate(-50%, -50%)";
+  errorContainer.style.width = "400px";
+  errorContainer.style.height = "400px";
+  errorContainer.style.backgroundColor = "#F2F0F9";
+  errorContainer.style.display = "flex";
+  errorContainer.style.flexDirection = "column";
+  errorContainer.style.alignItems = "center";
+  errorContainer.style.justifyContent = "center";
+  errorContainer.style.zIndex = "1000";
+  errorContainer.style.padding = "20px";
+  errorContainer.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
+
+  const messageDiv = document.createElement("div");
+  messageDiv.textContent = errorMessage;
+  messageDiv.style.fontSize = "14px";
+  messageDiv.style.fontWeight = "500";
+
+  const closeButton = document.createElement("button");
+  closeButton.innerHTML = `
+  <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="m2 2 20 20M2 22 22 2" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg>`;
+
+  closeButton.style.position = "absolute";
+  closeButton.style.top = "10px";
+  closeButton.style.right = "10px";
+  closeButton.style.border = "none";
+  closeButton.style.backgroundColor = "transparent";
+  closeButton.style.cursor = "pointer";
+  closeButton.style.padding = "0";
+  closeButton.style.width = "auto";
+  closeButton.style.height = "auto";
+
+  closeButton.addEventListener("click", () => {
+    table.removeChild(errorContainer);
+    });
+
+  errorContainer.append(closeButton);
+  errorContainer.append(messageDiv);
+  table.append(errorContainer);
+};
+
 const updateGoods = async (item) => {
   try {
     const response = await fetch(`${apiURL}/api/goods/${item.id}`, {
@@ -77,12 +137,13 @@ const updateGoods = async (item) => {
       body: JSON.stringify(item),
     });
     if (!response.ok) {
-      throw new Error("Failed to update goods");
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to update goods");
     }
     const updatedGoods = await response.json();
     return updatedGoods;
   } catch (error) {
-    throw new Error(error.message);
+    displayErrorMessages(error.message);
   }
 };
 
@@ -90,12 +151,13 @@ const getGoods = async (itemId) => {
   try {
     const response = await fetch(`${apiURL}/api/goods/${itemId}`);
     if (!response.ok) {
-      throw new Error("Goods Not Found");
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Goods Not Found");
     }
     const goods = await response.json();
     return goods;
   } catch (error) {
-    throw new Error(error.message);
+    displayErrorMessages(error.message);
   }
 };
 
@@ -105,13 +167,19 @@ const getGoodsName = async (name) => {
       method: "GET",
     });
     if (!response.ok) {
-      throw new Error("Товары не найдены");
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to update goods");
     }
     const data = await response.json();
+
+    if (!data.goods || data.goods.length === 0) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Goods Not Found");
+    }
     console.log(data.goods);
     return data.goods;
   } catch (error) {
-    throw new Error(error.message);
+    displayErrorMessages(error.message);
   }
 };
 
@@ -172,7 +240,7 @@ export const renderGoods = (data) => {
       table.appendChild(cardWrapper);
     });
   } else {
-    console.error("Data is not an array");
+    displayErrorMessages("Ошибка: Данные не найдены.");
   }
 };
 
@@ -200,14 +268,13 @@ function updateTable(data) {
       table.appendChild(cardWrapper);
     });
   } else {
-    console.error("Data is not an array");
+    displayErrorMessages("Ошибка: Данные не найдены, введите корректный поисковой запрос.");
   }
 }
 
 searchInput.addEventListener("input", (e) => {
   e.preventDefault();
   const name = e.target.value.trim();
-  console.log(name);
   clearTimeout(timeoutId);
 
   timeoutId = setTimeout(async () => {
@@ -354,6 +421,8 @@ const formControl = (form) => {
   });
   fetchData().then((data) => renderGoods(data));
 };
+
+displayErrorMessages();
 
 export { closeModalControl, formControl };
 export { modalClose, goodTableWrapper, modalCheckbox };
