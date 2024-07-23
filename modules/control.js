@@ -6,24 +6,21 @@ import { calculateFormTotal, updateTotalSum } from "./calculate.js";
 import "./generate.js";
 import { generateRandomId } from "./generate.js";
 
+const searchForm = document.querySelector(".panel__search");
+const searchInput = document.querySelector(".panel__input");
+const form = document.querySelector(".overlay");
+const formName = document.getElementById("name");
+const formCategory = document.getElementById("category");
+const formUnits = document.getElementById("units");
+const formDiscount = document.querySelector(".modal__input_discount");
+const formDescription = document.getElementById("description");
+const formCount = document.getElementById("count");
+const formPrice = document.getElementById("price");
+const id = document.querySelector("#item-id");
+let timeoutId;
+
 const apiURL = "https://thoracic-marbled-paneer.glitch.me";
 const URL = "https://thoracic-marbled-paneer.glitch.me/api/goods/";
-
-// export const loadGoods = (callback) => {
-//   const xhr = new XMLHttpRequest();
-//   xhr.open('GET', URL);
-
-//   xhr.addEventListener('load', () => {
-//     const data = JSON.parse(xhr.response);
-//     callback(data.goods);
-//   });
-
-//   xhr.addEventListener('error', () => {
-//     console.log('error');
-//   });
-
-//   xhr.send();
-// };
 
 const fetchData = async () => {
   const perPage = 20;
@@ -102,6 +99,38 @@ const getGoods = async (itemId) => {
   }
 };
 
+const getGoodsName = async (name) => {
+  try {
+    const response = await fetch(`${apiURL}/api/goods?search=${name}`, {
+      method: "GET",
+    });
+    if (!response.ok) {
+      throw new Error("Товары не найдены");
+    }
+    const data = await response.json();
+    console.log(data.goods);
+    return data.goods;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+const getGoodsCategory = async (name) => {
+  try {
+    const response = await fetch(`${apiURL}/api/category?search=${name}`, {
+      method: "GET",
+    });
+    if (!response.ok) {
+      throw new Error("Товары не найдены");
+    }
+    const data = await response.json();
+    console.log(data.goods);
+    return data.goods;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 const postData = async (newItem) => {
   await fetch(`${apiURL}/api/goods/`, {
     method: "POST",
@@ -149,14 +178,56 @@ export const renderGoods = (data) => {
 
 fetchData(renderGoods);
 
-const form = document.querySelector(".overlay");
-const formName = document.getElementById("name");
-const formCategory = document.getElementById("category");
-const formUnits = document.getElementById("units");
-const formDiscount = document.querySelector(".modal__input_discount");
-const formDescription = document.getElementById("description");
-const formCount = document.getElementById("count");
-const formPrice = document.getElementById("price");
+function updateTable(data) {
+  const table = document.querySelector(".table__body");
+  table.innerHTML = "";
+
+  if (Array.isArray(data)) {
+    data.forEach((item) => {
+      const cardWrapper = document.createElement("tr");
+      cardWrapper.innerHTML = `
+        <td class="table__cell" id="item-id">${item.id}</td>
+        <td class="table__cell table__cell_left">${item.title}</td>
+        <td class="table__cell">${item.category}</td>
+        <td class="table__cell">${item.units}</td>
+        <td class="table__cell">${item.count}</td>
+        <td class="table__cell">$${(item.count * item.price).toFixed(2)}</td>
+        <td class="table__cell table__cell_btn-wrapper">
+          <button class="table__btn table__btn_pic" data-pic="http://picsdesktop.net/autumn/800x600/PicsDesktop.net_7.jpg"></button>
+          <button class="table__btn table__btn_edit"></button>
+          <button class="table__btn table__btn_del"></button>
+        </td>`;
+      table.appendChild(cardWrapper);
+    });
+  } else {
+    console.error("Data is not an array");
+  }
+}
+
+searchInput.addEventListener("input", (e) => {
+  e.preventDefault();
+  const name = e.target.value.trim();
+  console.log(name);
+  clearTimeout(timeoutId);
+
+  timeoutId = setTimeout(async () => {
+    if (name) {
+      try {
+        const goods = await getGoodsName(name);
+        updateTable(goods);
+      } catch (error) {
+        console.error(error.message);
+      }
+    } else {
+      try {
+        const allGoods = await fetchData();
+        updateTable(allGoods);
+      } catch (error) {
+        console.error(error.message);
+      }
+    }
+  }, 300);
+});
 
 const closeModalControl = () => {
   document.querySelector(".overlay").classList.remove("active");
