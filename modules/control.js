@@ -16,6 +16,7 @@ import {
   postData,
   deleteData,
   getGoodsCategory,
+  allGoods,
 } from "./api.js";
 
 export const apiURL = "https://thoracic-marbled-paneer.glitch.me";
@@ -76,6 +77,17 @@ searchInput.addEventListener("input", (e) => {
   }, 300);
 });
 
+// const nextPage = document.querySelector('.sub-panel__right');
+// const prevPage = document.querySelector('.sub-panel__left');
+
+// nextPage.addEventListener('click', (currentPage) => {
+//   console.log(allGoods);
+// });
+
+// prevPage.addEventListener('click', (currentPage) => {
+//   console.log(allGoods);
+// });
+
 const closeModalControl = () => {
   document.querySelector(".overlay").classList.remove("active");
 };
@@ -86,7 +98,6 @@ form.addEventListener("submit", async (e) => {
   const formData = new FormData(form);
   const data = Object.fromEntries(formData);
   data.image = await toBase64(data.image);
-  console.log(data);
 
   fetch(URL, {
     method: "post",
@@ -103,31 +114,20 @@ const modalClose = document
     closeModalControl();
   });
 
-function openImageInNewWindow(apiURL) {
+function openImageInNewWindow(url) {
   const screenWidth = window.screen.width;
   const screenHeight = window.screen.height;
   const left = (screenWidth - 800) / 2;
   const top = (screenHeight - 600) / 2;
 
   const win = window.open(
-    apiURL,
+    url,
     "",
     `width=800,height=600,top=${top},left=${left}`
   );
   if (!win) {
     alert("Пожалуйста, разрешите всплывающие окна для этого сайта.");
   }
-}
-
-async function fetchImageUrl(id) {
-  const response = await fetch(`${apiURL}/images/${id}`);
-
-  if (!response.ok) {
-    throw new Error("Ошибка при получении изображения: " + response.statusText);
-  }
-
-  const data = await response.json();
-  return data.image;
 }
 
 const goodTableWrapper = document
@@ -139,7 +139,6 @@ const goodTableWrapper = document
       const row = target.closest("tr");
       if (row) {
         const id = row.querySelector("#item-id").textContent;
-        console.log(id);
         row.remove();
         await deleteData(id);
       }
@@ -152,7 +151,6 @@ const goodTableWrapper = document
 
       try {
         const goods = await getGoods(id);
-        console.log(goods);
         form.classList.add("active");
 
         await fillFormWithData(goods);
@@ -164,15 +162,22 @@ const goodTableWrapper = document
       }
     }
 
-    if (target.classList.contains("table__btn_pic")) {
+    if (target.classList.contains("table__img")) {
       const row = target.closest("tr");
+      const id = row.querySelector("#item-id").textContent;
+
       if (row) {
-        const id = row.querySelector("#item-id").textContent;
-        try {
-          const picUrl = await fetchImageUrl(id);
-          openImageInNewWindow(picUrl);
-        } catch (error) {
-          console.error("Ошибка при получении изображения:", error);
+        const imageUrl = target.getAttribute("alt");
+
+        if (
+          imageUrl ===
+          "https://thoracic-marbled-paneer.glitch.me/image/notimage.jpg"
+        ) {
+          displayErrorMessages("Ошибка: изображение не найдено.");
+        } else if (imageUrl) {
+          openImageInNewWindow(imageUrl);
+        } else {
+          displayErrorMessages("Не удалось загрузить изображение.");
         }
       }
     }
@@ -193,14 +198,12 @@ const modalCheckbox = document
   });
 
 const formControl = (form) => {
-  console.log(document.querySelector("#item-id"));
   let itemID;
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     if (formName.textContent === "") {
       itemID = generateRandomId();
-      console.log(itemID);
       const newItem = {
         title: formName.value,
         category: formCategory.value,
@@ -211,8 +214,6 @@ const formControl = (form) => {
         discount: formDiscount.value,
         id: itemID,
       };
-
-      console.log(newItem);
 
       postData(newItem);
       const updatedData = await fetchData();

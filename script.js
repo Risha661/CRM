@@ -22,10 +22,8 @@ import { goods } from "./modules/goodsMassive.js";
 
 import { vendorCode } from "./modules/const.js";
 
-import './modules/preview.js';
-import './modules/error.js';
-
-
+import "./modules/preview.js";
+import "./modules/error.js";
 
 (function init() {
   document.querySelector(".overlay").classList.remove("active");

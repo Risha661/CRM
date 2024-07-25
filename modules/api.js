@@ -1,19 +1,16 @@
 import { apiURL, URL } from "./control.js";
 
-export const fetchData = async () => {
-  const perPage = 20;
-  let allGoods = [];
-  let page = 1;
-  let dataAvailable = true;
+export let allGoods = [];
+let currentPage = 1;
+let perPage = 10;
+let dataAvailable = true;
 
+export const fetchData = async () => {
   try {
     while (dataAvailable) {
-      const response = await fetch(
-        `${apiURL}/api/goods?limit=${perPage}&page=${page}`,
-        {
-          method: "GET",
-        }
-      );
+      const response = await fetch(`${apiURL}/api/goods?page=${currentPage}`, {
+        method: "GET",
+      });
 
       if (!response.ok) {
         throw new Error(
@@ -25,12 +22,11 @@ export const fetchData = async () => {
 
       if (data.goods && data.goods.length > 0) {
         allGoods = allGoods.concat(data.goods);
-        page++;
+        currentPage++;
       } else {
         dataAvailable = false;
       }
     }
-
     console.log(allGoods);
     return allGoods;
   } catch (error) {
@@ -93,7 +89,6 @@ export const getGoodsName = async (name) => {
       const errorData = await response.json();
       throw new Error(errorData.message || "Не удалось найти товары");
     }
-    console.log(data.goods);
     return data.goods;
   } catch (error) {
     displayErrorMessages(error.message);
@@ -140,26 +135,23 @@ export const getGoodsCategory = async (categories) => {
   try {
     const response = await fetch(`${apiURL}/api/categories`);
     if (!response.ok) {
-        throw new Error('Ошибка при загрузке категорий: ' + response.statusText);
+      throw new Error("Ошибка при загрузке категорий: " + response.statusText);
     }
     const categories = await response.json();
-    console.log(categories);
     populateDatalist(categories);
-} catch (error) {
+  } catch (error) {
     console.error(error);
-}
+  }
 };
-const datalist = document.getElementById('category-list');
-console.log(datalist);
-
+const datalist = document.getElementById("category-list");
 
 const populateDatalist = (categories) => {
-  datalist.innerHTML = '';
-  categories.forEach(category => {
-    const option = document.createElement('option');
+  datalist.innerHTML = "";
+  categories.forEach((category) => {
+    const option = document.createElement("option");
     option.value = category;
     datalist.appendChild(option);
   });
-}
+};
 
 getGoodsCategory();

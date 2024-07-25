@@ -1,13 +1,11 @@
-import './control.js';
-import { apiURL } from './control.js';
+import "./control.js";
+import { apiURL } from "./control.js";
 
 const imagePreview = document.createElement("img");
 const modalFieldSet = document.querySelector(".modal__fieldset");
 imagePreview.classList.add("preview");
 
-
 const inputFile = document.querySelector(".modal__file");
-console.log(inputFile);
 
 export const toBase64 = (inputFile) =>
   new Promise((resolve, reject) => {
@@ -41,5 +39,3 @@ inputFile.addEventListener("change", async (e) => {
     }
   }
 });
-
-
