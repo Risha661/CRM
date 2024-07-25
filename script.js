@@ -25,7 +25,7 @@ import { vendorCode } from "./modules/const.js";
 import './modules/preview.js';
 import './modules/error.js';
 
-const btnOpenImages = document.querySelectorAll(".table__btn.table__btn_pic");
+
 
 (function init() {
   document.querySelector(".overlay").classList.remove("active");
@@ -61,20 +61,3 @@ const btnOpenImages = document.querySelectorAll(".table__btn.table__btn_pic");
   // renderGoods(goods);
   updateTotalSum();
 })();
-
-btnOpenImages.forEach((btnOpenImage) => {
-  btnOpenImage.addEventListener("click", () => {
-    const picUrl =
-      "http://picsdesktop.net/autumn/800x600/PicsDesktop.net_7.jpg";
-    const screenWidth = window.screen.width;
-    const screenHeight = window.screen.height;
-    const left = (screenWidth - 800) / 2;
-    const top = (screenHeight - 600) / 2;
-
-    const win = window.open(
-      picUrl,
-      "",
-      `width=800,height=600,top=${top},left=${left}`
-    );
-  });
-});

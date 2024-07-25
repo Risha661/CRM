@@ -1,4 +1,3 @@
-
 import "./const.js";
 import { goods } from "./goodsMassive.js";
 import "./preview.js";
@@ -33,6 +32,7 @@ const formDescription = document.getElementById("description");
 const formCount = document.getElementById("count");
 const formPrice = document.getElementById("price");
 const id = document.querySelector("#item-id");
+
 let timeoutId;
 
 const fillFormWithData = async (item) => {
@@ -61,13 +61,16 @@ searchInput.addEventListener("input", (e) => {
         const goods = await getGoodsName(name);
         updateTable(goods);
       } catch (error) {
-        displayErrorMessages('По данному запросу товары не найдены. Введите корректный запрос.');      }
+        displayErrorMessages(
+          "По данному запросу товары не найдены. Введите корректный запрос."
+        );
+      }
     } else {
       try {
         const allGoods = await fetchData();
         updateTable(allGoods);
       } catch (error) {
-        displayErrorMessages('Товары не найдены.');
+        displayErrorMessages("Товары не найдены.");
       }
     }
   }, 300);
@@ -77,11 +80,55 @@ const closeModalControl = () => {
   document.querySelector(".overlay").classList.remove("active");
 };
 
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData);
+  data.image = await toBase64(data.image);
+  console.log(data);
+
+  fetch(URL, {
+    method: "post",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    },
+  });
+});
+
 const modalClose = document
   .querySelector(".modal__close")
   .addEventListener("click", () => {
     closeModalControl();
   });
+
+function openImageInNewWindow(apiURL) {
+  const screenWidth = window.screen.width;
+  const screenHeight = window.screen.height;
+  const left = (screenWidth - 800) / 2;
+  const top = (screenHeight - 600) / 2;
+
+  const win = window.open(
+    apiURL,
+    "",
+    `width=800,height=600,top=${top},left=${left}`
+  );
+  if (!win) {
+    alert("Пожалуйста, разрешите всплывающие окна для этого сайта.");
+  }
+}
+
+async function fetchImageUrl(id) {
+  const response = await fetch(`${apiURL}/images/${id}`);
+
+  if (!response.ok) {
+    throw new Error("Ошибка при получении изображения: " + response.statusText);
+  }
+
+  const data = await response.json();
+  return data.image;
+}
 
 const goodTableWrapper = document
   .querySelector(".goods__table-wrapper")
@@ -114,6 +161,19 @@ const goodTableWrapper = document
         });
       } catch (error) {
         console.error(error);
+      }
+    }
+
+    if (target.classList.contains("table__btn_pic")) {
+      const row = target.closest("tr");
+      if (row) {
+        const id = row.querySelector("#item-id").textContent;
+        try {
+          const picUrl = await fetchImageUrl(id);
+          openImageInNewWindow(picUrl);
+        } catch (error) {
+          console.error("Ошибка при получении изображения:", error);
+        }
       }
     }
   });

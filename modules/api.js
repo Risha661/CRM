@@ -83,7 +83,9 @@ export const getGoodsName = async (name) => {
     });
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || "Не удалось найти товар с таким наименованием");
+      throw new Error(
+        errorData.message || "Не удалось найти товар с таким наименованием"
+      );
     }
     const data = await response.json();
 
@@ -133,18 +135,31 @@ export const deleteData = async (id) => {
   }
 };
 
-export const getGoodsCategory = async (name) => {
+export const getGoodsCategory = async (categories) => {
+  const apiURL = "https://thoracic-marbled-paneer.glitch.me";
   try {
-    const response = await fetch(`${apiURL}/api/category?search=${name}`, {
-      method: "GET",
-    });
+    const response = await fetch(`${apiURL}/api/categories`);
     if (!response.ok) {
-      throw new Error("Товары не найдены");
+        throw new Error('Ошибка при загрузке категорий: ' + response.statusText);
     }
-    const data = await response.json();
-    console.log(data.goods);
-    return data.goods;
-  } catch (error) {
-    throw new Error(error.message);
-  }
+    const categories = await response.json();
+    console.log(categories);
+    populateDatalist(categories);
+} catch (error) {
+    console.error(error);
+}
 };
+const datalist = document.getElementById('category-list');
+console.log(datalist);
+
+
+const populateDatalist = (categories) => {
+  datalist.innerHTML = '';
+  categories.forEach(category => {
+    const option = document.createElement('option');
+    option.value = category;
+    datalist.appendChild(option);
+  });
+}
+
+getGoodsCategory();

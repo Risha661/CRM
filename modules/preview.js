@@ -1,19 +1,17 @@
 import './control.js';
-
-const URL = "https://blushing-motley-language.glitch.me/api/goods";
+import { apiURL } from './control.js';
 
 const imagePreview = document.createElement("img");
 const modalFieldSet = document.querySelector(".modal__fieldset");
-const labelFile = document.querySelector(".modal__label_file");
 imagePreview.classList.add("preview");
 
-const form = document.querySelector(".modal__form");
-const inputFile = document.querySelector(".modal__file");
 
-const toBase64 = (inputFile) =>
+const inputFile = document.querySelector(".modal__file");
+console.log(inputFile);
+
+export const toBase64 = (inputFile) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
-
     reader.addEventListener("loadend", () => {
       resolve(reader.result);
     });
@@ -25,7 +23,8 @@ const toBase64 = (inputFile) =>
     reader.readAsDataURL(inputFile);
   });
 
-inputFile.addEventListener("change", async () => {
+inputFile.addEventListener("change", async (e) => {
+  e.preventDefault();
   if (inputFile.files.length > 0) {
     const src = URL.createObjectURL(inputFile.files[0]);
     if (inputFile.files[0].size < 1000000) {
@@ -43,19 +42,4 @@ inputFile.addEventListener("change", async () => {
   }
 });
 
-// form.addEventListener("submit", async (e) => {
-//   e.preventDefault();
 
-//   const formData = new FormData(form);
-//   const data = Object.fromEntries(formData);
-//   data.image = await toBase64(data.image);
-//   console.log(data);
-
-//   fetch(URL, {
-//     method: "post",
-//     body: JSON.stringify(data),
-//     headers: {
-//       "Content-type": "application/json; charset=UTF-8",
-//     },
-//   });
-// });
