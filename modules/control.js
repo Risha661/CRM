@@ -49,7 +49,7 @@ const fillFormWithData = async (item) => {
   id.value = item.id;
 };
 
-fetchData(renderGoods);
+//fetchData(renderGoods);
 
 searchInput.addEventListener("input", (e) => {
   e.preventDefault();
@@ -77,16 +77,7 @@ searchInput.addEventListener("input", (e) => {
   }, 300);
 });
 
-// const nextPage = document.querySelector('.sub-panel__right');
-// const prevPage = document.querySelector('.sub-panel__left');
 
-// nextPage.addEventListener('click', (currentPage) => {
-//   console.log(allGoods);
-// });
-
-// prevPage.addEventListener('click', (currentPage) => {
-//   console.log(allGoods);
-// });
 
 const closeModalControl = () => {
   document.querySelector(".overlay").classList.remove("active");

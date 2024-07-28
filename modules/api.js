@@ -1,14 +1,15 @@
 import { apiURL, URL } from "./control.js";
 
 export let allGoods = [];
-let currentPage = 1;
+let apiCurrentPage = 1;
 let perPage = 10;
 let dataAvailable = true;
 
 export const fetchData = async () => {
   try {
     while (dataAvailable) {
-      const response = await fetch(`${apiURL}/api/goods?page=${currentPage}`, {
+      // currentPage = 1;
+      const response = await fetch(`${apiURL}/api/goods?page=${apiCurrentPage}`, {
         method: "GET",
       });
 
@@ -19,15 +20,19 @@ export const fetchData = async () => {
       }
 
       const data = await response.json();
+      console.log(data);
+      let pagesGoods;
+      let totalGoods;
 
       if (data.goods && data.goods.length > 0) {
         allGoods = allGoods.concat(data.goods);
-        currentPage++;
+        console.log('check complite' + allGoods.length);
+        apiCurrentPage++;
       } else {
         dataAvailable = false;
       }
     }
-    console.log(allGoods);
+    //console.log(allGoods);
     return allGoods;
   } catch (error) {
     console.error("Произошла ошибка при загрузке данных:", error.message);
@@ -37,6 +42,7 @@ export const fetchData = async () => {
     return null;
   }
 };
+
 
 export const updateGoods = async (item) => {
   try {
