@@ -4,11 +4,19 @@ import { displayErrorMessages } from "./error.js";
 let renderPage = 1;
 const perPage = 5;
 let dataGoods;
-const nextPage = document.querySelector('.sub-panel__right');
-const prevPage = document.querySelector('.sub-panel__left');
+
 const table = document.querySelector(".table__body");
+const divBtnContainer = document.querySelector('.sub-panel');
+console.log(divBtnContainer);
+divBtnContainer.innerHTML = '';
+divBtnContainer.innerHTML = `<p class="sub-panel__choice-pages">Показывать на странице: 5</p>
+          <p class="sub-panel__pages">1 - 5 из 16</p>
+          <button class="sub-panel__left"></button>
+          <button class="sub-panel__right"></button>`;
 
 const subTextPage = document.querySelector('.sub-panel__pages');
+const nextPage = document.querySelector('.sub-panel__right');
+const prevPage = document.querySelector('.sub-panel__left');
 console.log(subTextPage);
 
 
@@ -41,7 +49,7 @@ export const renderGoods = async (allGoods) => {
   let visibleMassive = [];
 
   const minElem = (renderPage-1) * perPage + 1;
-  const maxElem = perPage * renderPage;
+  const maxElem = perPage * renderPage >= allGoods.length ? allGoods.length : perPage * renderPage;
   subTextPage.textContent = minElem + ' - ' + maxElem + ' из ' + allGoods.length;
 for (let i = (renderPage-1) * perPage + 1; i <= perPage * renderPage; i++){
   visibleMassive.push(allGoods[i - 1]);
