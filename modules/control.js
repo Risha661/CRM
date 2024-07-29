@@ -1,11 +1,9 @@
 import "./const.js";
-import { goods } from "./goodsMassive.js";
 import "./preview.js";
-import { vendorCode } from "./const.js";
 import { calculateFormTotal, updateTotalSum } from "./calculate.js";
 import "./generate.js";
 import { generateRandomId } from "./generate.js";
-import { renderGoods, updateTable } from "./render.js";
+import { renderGoods } from "./render.js";
 import { displayErrorMessages } from "./error.js";
 
 import {
@@ -15,14 +13,11 @@ import {
   getGoodsName,
   postData,
   deleteData,
-  getGoodsCategory,
-  allGoods,
 } from "./api.js";
 
 export const apiURL = "https://thoracic-marbled-paneer.glitch.me";
 export const URL = "https://thoracic-marbled-paneer.glitch.me/api/goods/";
 
-const searchForm = document.querySelector(".panel__search");
 const searchInput = document.querySelector(".panel__input");
 const form = document.querySelector(".overlay");
 const formName = document.getElementById("name");
@@ -32,7 +27,6 @@ const formDiscount = document.querySelector(".modal__input_discount");
 const formDescription = document.getElementById("description");
 const formCount = document.getElementById("count");
 const formPrice = document.getElementById("price");
-const id = document.querySelector("#item-id");
 
 let timeoutId;
 
@@ -60,7 +54,8 @@ searchInput.addEventListener("input", (e) => {
     if (name) {
       try {
         const goods = await getGoodsName(name);
-        updateTable(goods);
+        console.log(goods);
+        renderGoods(goods);
       } catch (error) {
         displayErrorMessages(
           "По данному запросу товары не найдены. Введите корректный запрос."
@@ -68,16 +63,14 @@ searchInput.addEventListener("input", (e) => {
       }
     } else {
       try {
-        const allGoods = await fetchData();
-        updateTable(allGoods);
+        const dataGoods = await fetchData();
+        renderGoods(dataGoods);
       } catch (error) {
         displayErrorMessages("Товары не найдены.");
       }
     }
   }, 300);
 });
-
-
 
 const closeModalControl = () => {
   document.querySelector(".overlay").classList.remove("active");
