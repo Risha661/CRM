@@ -1,45 +1,58 @@
 import { apiURL, URL } from "./control.js";
 
-export let allGoods = [];
+//export let allGoods = [];
 let apiCurrentPage = 1;
 export function setApiCurrentPage(val) {
   apiCurrentPage = val;
 }
 let dataAvailable = true;
+export function setDataAvailable(val){
+  dataAvailable = val;
+}
+
+const simpleGetRequest = async (page) => {
+  try {
+    console.log(`${apiURL}/api/goods?page=${page}`);
+
+  const response = await fetch(
+    `${apiURL}/api/goods?page=${page}`,
+    {
+      method: "GET",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      `Ошибка сети: ${response.status} ${response.statusText}`
+    );
+  }
+  const data = await response.json();
+  return data;
+} catch (error) {
+  console.error("Произошла ошибка при загрузке данных:", error.message);
+  displayErrorMessages(
+    "Не удалось загрузить данные. Пожалуйста, попробуйте позже."
+  );
+  return null;
+}
+}
 
 export const fetchData = async () => {
-  try {
-    while (dataAvailable) {
-      const response = await fetch(
-        `${apiURL}/api/goods?page=${apiCurrentPage}`,
-        {
-          method: "GET",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          `Ошибка сети: ${response.status} ${response.statusText}`
-        );
-      }
-
-      const data = await response.json();
-
-      if (data.goods && data.goods.length > 0) {
-        allGoods = allGoods.concat(data.goods);
-        apiCurrentPage++;
-      } else {
-        dataAvailable = false;
-      }
+  console.log ('вызов фетчДата')
+  let allGoods = [];
+  while (dataAvailable) {
+    console.log ("номер стр " + apiCurrentPage)
+    let dataGet = await simpleGetRequest(apiCurrentPage);
+    if (dataGet.goods && dataGet.goods.length > 0) {
+      allGoods = allGoods.concat(dataGet.goods);
+      apiCurrentPage++;
+    } else {
+      dataAvailable = false;
     }
-    return allGoods;
-  } catch (error) {
-    console.error("Произошла ошибка при загрузке данных:", error.message);
-    displayErrorMessages(
-      "Не удалось загрузить данные. Пожалуйста, попробуйте позже."
-    );
-    return null;
   }
+  apiCurrentPage = 1;
+  console.log(allGoods);
+  return allGoods;
 };
 
 export const updateGoods = async (item) => {
@@ -102,6 +115,7 @@ export const getGoodsName = async (name) => {
 
 export const postData = async (newItem) => {
   try {
+    console.log('tryPostData');
     const response = await fetch(`${apiURL}/api/goods/`, {
       method: "POST",
       headers: {
@@ -114,6 +128,7 @@ export const postData = async (newItem) => {
       throw new Error(errorData.message || "Что-то пошло не так...");
     }
     const data = await response.json();
+    console.log(data);
     return data;
   } catch (error) {
     displayErrorMessages(error.message);

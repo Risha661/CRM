@@ -12,6 +12,8 @@ import {
   form,
 } from "./modules/const.js";
 
+import { fetchAndRender } from "./modules/control.js"
+
 import { generateRandomId } from "./modules/generate.js";
 
 import { updateTotalSum } from "./modules/calculate.js";
@@ -26,6 +28,7 @@ import { getEditingState, setEditingState } from "./modules/control.js";
 
 import "./modules/preview.js";
 import "./modules/error.js";
+import { fetchData } from "./modules/api.js";
 
 (function init() {
   document.querySelector(".overlay").classList.remove("active");
@@ -62,6 +65,10 @@ import "./modules/error.js";
   cmsTotalPrice.textContent = totalSumColumn;
 
   formControl(form);
-  // renderGoods(goods);
-  updateTotalSum();
+  //fetchData().then((data) => renderGoods(data));
+  fetchAndRender();
+
+  // const data = fetchData();
+  // renderGoods(data);
+  //updateTotalSum();
 })();

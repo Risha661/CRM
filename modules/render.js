@@ -1,7 +1,10 @@
-import { allGoods } from "./api.js";
+//import { allGoods } from "./api.js";
 import { displayErrorMessages } from "./error.js";
 
 let renderPage = 1;
+export function setRenderPage(value){
+  renderPage = value;
+}
 const perPage = 5;
 let dataGoods;
 
@@ -21,8 +24,11 @@ const prevPage = document.querySelector(".sub-panel__left");
 export const renderGoods = async (allGoods) => {
   table.innerHTML = "";
   dataGoods = allGoods;
+  console.log("dataGoods.length");
+  console.log(dataGoods.length);
 
   let maxPage = Math.ceil(allGoods.length / perPage);
+  console.log(allGoods.length);
 
   if (renderPage + 1 > maxPage) {
     nextPage.disabled = true;

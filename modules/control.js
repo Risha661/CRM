@@ -4,8 +4,9 @@ import { calculateFormTotal, updateTotalSum } from "./calculate.js";
 import "./generate.js";
 import { generateRandomId } from "./generate.js";
 import { renderGoods } from "./render.js";
+import { setRenderPage } from "./render.js";
 import { displayErrorMessages } from "./error.js";
-import { setApiCurrentPage } from "./api.js";
+import { setDataAvailable } from "./api.js";
 
 import {
   fetchData,
@@ -105,6 +106,13 @@ const modalClose = document
     closeModalControl();
   });
 
+export const fetchAndRender = async() => {
+  setDataAvailable(true);
+  const newData = await fetchData();
+  await renderGoods(newData);
+  //Возможно калькулятор сюда.
+}
+
 function openImageInNewWindow(url) {
   const screenWidth = window.screen.width;
   const screenHeight = window.screen.height;
@@ -186,9 +194,11 @@ const modalCheckbox = document
     }
   });
 
+  const a = document.querySelector('.modal__submit');
+  console.log(a);
+
 const formControl = (form) => {
   form.addEventListener("submit", async () => {
-
     if (isEditing === false) {
       console.log("createNewPosition");
       let itemID = generateRandomId();
@@ -219,23 +229,22 @@ const formControl = (form) => {
         id: Number(id),
       };
       await updateGoods(updatedItem);
-      setApiCurrentPage(1);
-      const newData = await fetchData();
-      renderGoods(newData);
       // fetchData().then((data) => renderGoods(data));
-        // const newData = fetchData();
-        // console.log(newData);
-        // //renderGoods(newData);
+      // const newData = fetchData();
+      // console.log(newData);
+      // //renderGoods(newData);
 
 
-        //console.log("Данные успешно обновлены:", updatedData);
-      }
+      //console.log("Данные успешно обновлены:", updatedData);
+    }
+    await fetchAndRender();
       // const updatedData = await fetchData();
       // renderGoods(updatedData);
       //fetchData().then((data) => renderGoods(data));
     calculateFormTotal();
     updateTotalSum();
     form.reset();
+    closeModalControl();
     document
     .querySelector(".modal__submit")
     .addEventListener("click", closeModalControl());
