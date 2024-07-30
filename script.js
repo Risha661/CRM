@@ -22,6 +22,8 @@ import { goods } from "./modules/goodsMassive.js";
 
 import { vendorCode } from "./modules/const.js";
 
+import { getEditingState, setEditingState } from "./modules/control.js";
+
 import "./modules/preview.js";
 import "./modules/error.js";
 
@@ -29,6 +31,10 @@ import "./modules/error.js";
   document.querySelector(".overlay").classList.remove("active");
 
   btnAdd.addEventListener("click", () => {
+
+    setEditingState(false);
+    console.log(getEditingState() + 'isEditing');
+
     overlayForm.classList.add("active");
     const randomId = generateRandomId();
     vendorCode.textContent = randomId;

@@ -2,6 +2,9 @@ import { apiURL, URL } from "./control.js";
 
 export let allGoods = [];
 let apiCurrentPage = 1;
+export function setApiCurrentPage(val) {
+  apiCurrentPage = val;
+}
 let dataAvailable = true;
 
 export const fetchData = async () => {
@@ -24,7 +27,6 @@ export const fetchData = async () => {
 
       if (data.goods && data.goods.length > 0) {
         allGoods = allGoods.concat(data.goods);
-        console.log("check complite" + allGoods.length);
         apiCurrentPage++;
       } else {
         dataAvailable = false;
@@ -49,6 +51,7 @@ export const updateGoods = async (item) => {
       },
       body: JSON.stringify(item),
     });
+    console.log('json Patch' + JSON.stringify(item));
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || "Failed to update goods");
@@ -111,6 +114,7 @@ export const postData = async (newItem) => {
       throw new Error(errorData.message || "Что-то пошло не так...");
     }
     const data = await response.json();
+    return data;
   } catch (error) {
     displayErrorMessages(error.message);
   }
@@ -157,3 +161,19 @@ const populateDatalist = (categories) => {
 };
 
 getGoodsCategory();
+
+export const fetchTotalGoods = async (total) => {
+  try {
+    const response = await fetch(`${apiURL}/api/total`, {
+      method: "GET",
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Не удалось получить общую сумму товаров");
+    }
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    displayErrorMessages(error.message);
+  }
+};

@@ -5,6 +5,7 @@ import "./generate.js";
 import { generateRandomId } from "./generate.js";
 import { renderGoods } from "./render.js";
 import { displayErrorMessages } from "./error.js";
+import { setApiCurrentPage } from "./api.js";
 
 import {
   fetchData,
@@ -17,6 +18,13 @@ import {
 
 export const apiURL = "https://thoracic-marbled-paneer.glitch.me";
 export const URL = "https://thoracic-marbled-paneer.glitch.me/api/goods/";
+let isEditing = false;
+export function getEditingState() {
+  return isEditing;
+}
+export function setEditingState(value) {
+  isEditing = value;
+}
 
 const searchInput = document.querySelector(".panel__input");
 const form = document.querySelector(".overlay");
@@ -41,6 +49,8 @@ const fillFormWithData = async (item) => {
   formCount.value = item.count;
   formPrice.value = item.price;
   id.value = item.id;
+
+  console.log("while editing status: " + isEditing);
 };
 
 //fetchData(renderGoods);
@@ -54,7 +64,6 @@ searchInput.addEventListener("input", (e) => {
     if (name) {
       try {
         const goods = await getGoodsName(name);
-        console.log(goods);
         renderGoods(goods);
       } catch (error) {
         displayErrorMessages(
@@ -78,18 +87,16 @@ const closeModalControl = () => {
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
-
-  const formData = new FormData(form);
-  const data = Object.fromEntries(formData);
-  data.image = await toBase64(data.image);
-
-  fetch(URL, {
-    method: "post",
-    body: JSON.stringify(data),
-    headers: {
-      "Content-type": "application/json; charset=UTF-8",
-    },
-  });
+  //   const formData = new FormData(form);
+  //   const data = Object.fromEntries(formData);
+  //   data.image = await toBase64(data.image);
+  //   fetch(URL, {
+  //     method: "post",
+  //     body: JSON.stringify(data),
+  //     headers: {
+  //       "Content-type": "application/json; charset=UTF-8",
+  //     },
+  //   });
 });
 
 const modalClose = document
@@ -131,16 +138,14 @@ const goodTableWrapper = document
     if (target.classList.contains("table__btn_edit")) {
       const row = target.closest("tr");
       const id = row.querySelector("#item-id").textContent;
-      await fetchData(id);
 
       try {
         const goods = await getGoods(id);
+        console.log(goods);
+        isEditing = true;
         form.classList.add("active");
 
-        await fillFormWithData(goods);
-        form.addEventListener("submit", async (e) => {
-          e.preventDefault();
-        });
+        fillFormWithData(goods);
       } catch (error) {
         console.error(error);
       }
@@ -182,12 +187,11 @@ const modalCheckbox = document
   });
 
 const formControl = (form) => {
-  let itemID;
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  form.addEventListener("submit", async () => {
 
-    if (formName.textContent === "") {
-      itemID = generateRandomId();
+    if (isEditing === false) {
+      console.log("createNewPosition");
+      let itemID = generateRandomId();
       const newItem = {
         title: formName.value,
         category: formCategory.value,
@@ -198,22 +202,12 @@ const formControl = (form) => {
         discount: formDiscount.value,
         id: itemID,
       };
-
-      postData(newItem);
-      const updatedData = await fetchData();
-      renderGoods(updatedData);
-
-      calculateFormTotal();
-      updateTotalSum();
-      form.reset();
-      document
-        .querySelector(".modal__submit")
-        .addEventListener("click", closeModalControl());
-    }
-
-    if (formName.textContent !== "") {
+      console.log(newItem.title);
+      await postData(newItem);
+    } else {
+      console.log('sdfsdfsdfsd');
       const id = document.querySelector("#item-id").textContent;
-
+      console.log(id);
       const updatedItem = {
         title: formName.value,
         category: formCategory.value,
@@ -222,17 +216,29 @@ const formControl = (form) => {
         count: formCount.value,
         price: formPrice.value,
         discount: formDiscount.value,
-        id: id,
+        id: Number(id),
       };
+      await updateGoods(updatedItem);
+      setApiCurrentPage(1);
+      const newData = await fetchData();
+      renderGoods(newData);
+      // fetchData().then((data) => renderGoods(data));
+        // const newData = fetchData();
+        // console.log(newData);
+        // //renderGoods(newData);
 
-      try {
-        const updatedData = await updateGoods(updatedItem);
-        console.log("Данные успешно обновлены:", updatedData);
-      } catch (error) {
-        console.error("Ошибка при обновлении данных:", error);
+
+        //console.log("Данные успешно обновлены:", updatedData);
       }
-      console.log(updatedItem);
-    }
+      // const updatedData = await fetchData();
+      // renderGoods(updatedData);
+      //fetchData().then((data) => renderGoods(data));
+    calculateFormTotal();
+    updateTotalSum();
+    form.reset();
+    document
+    .querySelector(".modal__submit")
+    .addEventListener("click", closeModalControl());
   });
 
   form.addEventListener("focusout", (e) => {

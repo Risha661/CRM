@@ -1,5 +1,6 @@
 import { modalTotalPrice } from "./const.js";
 import { goods } from "./goodsMassive.js";
+import { fetchData } from "./api.js";
 
 const calculateFormTotal = () => {
   const count = document.getElementById("count");
@@ -31,13 +32,30 @@ const calculateTableTotalPrice = (goods) => {
   return totalSum.toFixed(2);
 };
 
-const updateTotalSum = () => {
-  const totalSumColumn = calculateTableTotalPrice(goods);
 
-  const cmsTotalPrice = document.querySelector(".cms__total-price");
-  cmsTotalPrice.textContent = "$" + totalSumColumn;
 
-  return cmsTotalPrice.textContent;
+const calculateTotalWithDiscounts = (goods) => {
+  let totalSum = 0;
+
+  goods.forEach(good => {
+    const price = parseFloat(good.price);
+    const discount = parseFloat(good.discount);
+    const count = parseInt(good.count);
+
+    const discountedPrice = price - (price * (discount / 100));
+    totalSum += discountedPrice * count;
+  });
+console.log(totalSum);
+  return totalSum;
+};
+
+const updateTotalSum = async () => {
+  const goods = await fetchData();
+  if (goods && goods.length > 0) {
+    const totalSum = calculateTotalWithDiscounts(goods);
+    const cmsTotalPrice = document.querySelector(".cms__total-price");
+    cmsTotalPrice.textContent = "$" + totalSum.toFixed(2);
+  }
 };
 
 export { calculateFormTotal, calculateTableTotalPrice, updateTotalSum };

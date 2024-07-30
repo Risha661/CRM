@@ -67,7 +67,7 @@ export const renderGoods = async (allGoods) => {
               item.image
             }" src="../img/pic.svg" class="table__img" />
           </button>
-          <button class="table__btn table__btn_edit"></button>
+          <button class="table__btn table__btn_edit" id="edit"></button>
           <button class="table__btn table__btn_del"></button>
         </td>`;
       table.appendChild(cardWrapper);

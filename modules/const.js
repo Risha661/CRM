@@ -40,7 +40,3 @@ export const cmsTotalPrice = document.querySelector(".cms__total-price");
 export const form = document.querySelector(".modal__form");
 
 export const sentData = (data) => console.log(data);
-
-//импорт как объект
-
-// import * as constObj from './modules/const.js'
