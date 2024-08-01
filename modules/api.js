@@ -6,7 +6,7 @@ export function setApiCurrentPage(val) {
   apiCurrentPage = val;
 }
 let dataAvailable = true;
-export function setDataAvailable(val) {
+export function setDataAvailable(val){
   dataAvailable = val;
 }
 
@@ -14,27 +14,34 @@ const simpleGetRequest = async (page) => {
   try {
     console.log(`${apiURL}/api/goods?page=${page}`);
 
-    const response = await fetch(`${apiURL}/api/goods?page=${page}`, {
+  const response = await fetch(
+    `${apiURL}/api/goods?page=${page}`,
+    {
       method: "GET",
-    });
-
-    if (!response.ok) {
-      throw new Error(`Ошибка сети: ${response.status} ${response.statusText}`);
     }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Произошла ошибка при загрузке данных:", error.message);
-    displayErrorMessages(
-      "Не удалось загрузить данные. Пожалуйста, попробуйте позже."
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      `Ошибка сети: ${response.status} ${response.statusText}`
     );
-    return null;
   }
-};
+  const data = await response.json();
+  return data;
+} catch (error) {
+  console.error("Произошла ошибка при загрузке данных:", error.message);
+  displayErrorMessages(
+    "Не удалось загрузить данные. Пожалуйста, попробуйте позже."
+  );
+  return null;
+}
+}
 
 export const fetchData = async () => {
+  console.log ('вызов фетчДата')
   let allGoods = [];
   while (dataAvailable) {
+    console.log ("номер стр " + apiCurrentPage)
     let dataGet = await simpleGetRequest(apiCurrentPage);
     if (dataGet.goods && dataGet.goods.length > 0) {
       allGoods = allGoods.concat(dataGet.goods);
@@ -44,12 +51,13 @@ export const fetchData = async () => {
     }
   }
   apiCurrentPage = 1;
-
+  console.log(allGoods);
   return allGoods;
 };
 
 export const updateGoods = async (item) => {
   try {
+    console.log("in patch" + item.id)
     const response = await fetch(`${apiURL}/api/goods/${item.id}`, {
       method: "PATCH",
       headers: {
@@ -58,6 +66,7 @@ export const updateGoods = async (item) => {
       body: JSON.stringify(item),
     });
 
+    console.log('json Patch' + JSON.stringify(item));
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || "Failed to update goods");
@@ -108,6 +117,7 @@ export const getGoodsName = async (name) => {
 
 export const postData = async (newItem) => {
   try {
+    console.log('tryPostData');
     const response = await fetch(`${apiURL}/api/goods/`, {
       method: "POST",
       headers: {
@@ -120,7 +130,7 @@ export const postData = async (newItem) => {
       throw new Error(errorData.message || "Что-то пошло не так...");
     }
     const data = await response.json();
-
+    console.log(data);
     return data;
   } catch (error) {
     displayErrorMessages(error.message);
@@ -176,9 +186,7 @@ export const fetchTotalGoods = async (total) => {
     });
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(
-        errorData.message || "Не удалось получить общую сумму товаров"
-      );
+      throw new Error(errorData.message || "Не удалось получить общую сумму товаров");
     }
     const result = await response.json();
     return result;
@@ -186,3 +194,4 @@ export const fetchTotalGoods = async (total) => {
     displayErrorMessages(error.message);
   }
 };
+

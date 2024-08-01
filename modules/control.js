@@ -1,6 +1,6 @@
 import "./const.js";
 import "./preview.js";
-import { calculateFormTotal } from "./calculate.js";
+import { calculateFormTotal, globalTotalPrice } from "./calculate.js";
 import "./generate.js";
 import { generateRandomId } from "./generate.js";
 import { renderGoods } from "./render.js";
@@ -17,8 +17,8 @@ import {
   deleteData,
 } from "./api.js";
 
-export const apiURL = "https://thoracic-marbled-paneer.glitch.me";
-export const URL = "https://thoracic-marbled-paneer.glitch.me/api/goods/";
+export const apiURL = "https://blushing-motley-language.glitch.me";
+export const URL = "https://blushing-motley-language.glitch.me/api/goods";
 let isEditing = false;
 export function getEditingState() {
   return isEditing;
@@ -26,6 +26,8 @@ export function getEditingState() {
 export function setEditingState(value) {
   isEditing = value;
 }
+
+let idForEdit = 0;
 
 const searchInput = document.querySelector(".panel__input");
 const form = document.querySelector(".overlay");
@@ -42,8 +44,11 @@ let timeoutId;
 export const fetchAndRender = async () => {
   setDataAvailable(true);
   const newData = await fetchData();
+  console.log("newDataFromFaR" + newData.length);
   await renderGoods(newData);
+  globalTotalPrice(newData);
   //Возможно калькулятор сюда.
+
 };
 
 const fillFormWithData = async (item) => {
@@ -146,7 +151,9 @@ const goodTableWrapper = document
       const id = row.querySelector("#item-id").textContent;
 
       try {
-        const goods = await getGoods(id);
+        const goods = await getGoods(id)
+        idForEdit = goods.id;
+
 
         isEditing = true;
         form.classList.add("active");
@@ -155,6 +162,7 @@ const goodTableWrapper = document
       } catch (error) {
         console.error(error);
       }
+      return goods;
     }
 
     if (target.classList.contains("table__img")) {
@@ -166,7 +174,7 @@ const goodTableWrapper = document
 
         if (
           imageUrl ===
-          "https://thoracic-marbled-paneer.glitch.me/image/notimage.jpg"
+          "https://blushing-motley-language.glitch.me/image/notimage.jpg"
         ) {
           displayErrorMessages("Ошибка: изображение не найдено.");
         } else if (imageUrl) {
@@ -211,7 +219,10 @@ const formControl = (form) => {
 
       await postData(newItem);
     } else if (isEditing) {
-      const id = document.querySelector("#item-id").textContent;
+
+      const id = idForEdit === 0 ? 0 : idForEdit;
+      //document.getElementById("item-id").textContent;
+      console.log(id);
 
       const updatedItem = {
         title: formName.value,
@@ -224,6 +235,7 @@ const formControl = (form) => {
         id: Number(id),
       };
       await updateGoods(updatedItem);
+      idForEdit = 0;
     }
     await fetchAndRender();
 
@@ -241,7 +253,7 @@ const formControl = (form) => {
       calculateFormTotal();
     }
   });
-  fetchData().then((data) => renderGoods(data));
+ fetchAndRender();
 };
 
 export { closeModalControl, formControl };

@@ -80,7 +80,7 @@ export const renderGoods = async (allGoods) => {
           <button class="table__btn table__btn_del"></button>
         </td>`;
       table.appendChild(cardWrapper);
-      globalTotalPrice();
+      //globalTotalPrice();
     });
   } else {
     displayErrorMessages("Ошибка: Данные не найдены.");

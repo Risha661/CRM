@@ -1,8 +1,10 @@
 import { modalTotalPrice } from "./const.js";
 import { goods } from "./goodsMassive.js";
 import { fetchData, fetchTotalGoods } from "./api.js";
+import { fetchAndRender } from "./control.js";
 
 const totalTableSpan = document.querySelector('.cms__total-price');
+let totalPrice = 0;
 
 const calculateFormTotal = () => {
   const count = document.getElementById("count");
@@ -21,11 +23,27 @@ const calculateFormTotal = () => {
   return modalTotalPrice;
 };
 
-export const globalTotalPrice = async () => {
-  let totalPrice = 0;
-  totalPrice = await fetchTotalGoods();
-  totalTableSpan.textContent = totalPrice;
-  console.log(totalPrice);
-};
+export function globalTotalPrice (goodsForPrice) {
+    console.log(goodsForPrice);
+    let totalDiscountPrice = 0;
+    let itemPrice = 0;
+    let globalPrice = 0;
+
+    goodsForPrice.forEach(item => {
+      if (item.discount > 0) {
+        const itemDiscountPrice = item.price * (1 - item.discount / 100) * item.count;
+        totalDiscountPrice += itemDiscountPrice;
+        console.log("Цена со скидкой для товара:", totalDiscountPrice);
+      } else if (item.discount === 0) {
+        const itemPriceSum = item.price * item.count;
+        itemPrice += itemPriceSum;
+      }
+    });
+    globalPrice = totalDiscountPrice + itemPrice;
+    totalTableSpan.textContent = globalPrice;
+
+    console.log("Общая сумма со скидками:", globalPrice);
+
+  };
 
 export { calculateFormTotal };
