@@ -1,5 +1,4 @@
 import {
-  totalSumColumn,
   btnAdd,
   overlayForm,
   inputFields,
@@ -12,11 +11,9 @@ import {
   form,
 } from "./modules/const.js";
 
-import { fetchAndRender } from "./modules/control.js"
+import { fetchAndRender } from "./modules/control.js";
 
 import { generateRandomId } from "./modules/generate.js";
-
-import { updateTotalSum } from "./modules/calculate.js";
 
 import { formControl } from "./modules/control.js";
 
@@ -34,9 +31,7 @@ import { fetchData } from "./modules/api.js";
   document.querySelector(".overlay").classList.remove("active");
 
   btnAdd.addEventListener("click", () => {
-
     setEditingState(false);
-    console.log(getEditingState() + 'isEditing');
 
     overlayForm.classList.add("active");
     const randomId = generateRandomId();
@@ -62,11 +57,10 @@ import { fetchData } from "./modules/api.js";
   discount.type = "number";
 
   modalTotalPrice.textContent = "$ 0.00";
-  cmsTotalPrice.textContent = totalSumColumn;
 
-  formControl(form);
+  formControl(form, true);
   //fetchData().then((data) => renderGoods(data));
-  fetchAndRender();
+  //fetchAndRender();
 
   // const data = fetchData();
   // renderGoods(data);

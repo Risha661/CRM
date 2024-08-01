@@ -1,8 +1,9 @@
 //import { allGoods } from "./api.js";
 import { displayErrorMessages } from "./error.js";
+import { globalTotalPrice } from "./calculate.js";
 
 let renderPage = 1;
-export function setRenderPage(value){
+export function setRenderPage(value) {
   renderPage = value;
 }
 const perPage = 5;
@@ -24,11 +25,8 @@ const prevPage = document.querySelector(".sub-panel__left");
 export const renderGoods = async (allGoods) => {
   table.innerHTML = "";
   dataGoods = allGoods;
-  console.log("dataGoods.length");
-  console.log(dataGoods.length);
 
   let maxPage = Math.ceil(allGoods.length / perPage);
-  console.log(allGoods.length);
 
   if (renderPage + 1 > maxPage) {
     nextPage.disabled = true;
@@ -51,8 +49,13 @@ export const renderGoods = async (allGoods) => {
       : perPage * renderPage;
   subTextPage.textContent =
     minElem + " - " + maxElem + " из " + allGoods.length;
+
   for (let i = (renderPage - 1) * perPage + 1; i <= perPage * renderPage; i++) {
-    visibleMassive.push(allGoods[i - 1]);
+    if (allGoods[i - 1]) {
+      visibleMassive.push(allGoods[i - 1]);
+    } else {
+      break;
+    }
   }
 
   if (Array.isArray(visibleMassive)) {
@@ -64,7 +67,7 @@ export const renderGoods = async (allGoods) => {
         <td class="table__cell">${item.category}</td>
         <td class="table__cell">${item.units}</td>
         <td class="table__cell">${item.count}</td>
-        <td class="table__cell">$${item.count * item.price}</td>
+        <td class="table__cell">$${item.price*(1-item.discount/100)*item.count}</td>
         <td class="table__cell table__cell_btn-wrapper">
         <button class="table__btn table__btn_pic" data-pic="https://thoracic-marbled-paneer.glitch.me/${
           item.image
@@ -77,6 +80,7 @@ export const renderGoods = async (allGoods) => {
           <button class="table__btn table__btn_del"></button>
         </td>`;
       table.appendChild(cardWrapper);
+      globalTotalPrice();
     });
   } else {
     displayErrorMessages("Ошибка: Данные не найдены.");

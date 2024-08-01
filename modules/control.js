@@ -1,6 +1,6 @@
 import "./const.js";
 import "./preview.js";
-import { calculateFormTotal, updateTotalSum } from "./calculate.js";
+import { calculateFormTotal } from "./calculate.js";
 import "./generate.js";
 import { generateRandomId } from "./generate.js";
 import { renderGoods } from "./render.js";
@@ -39,6 +39,13 @@ const formPrice = document.getElementById("price");
 
 let timeoutId;
 
+export const fetchAndRender = async () => {
+  setDataAvailable(true);
+  const newData = await fetchData();
+  await renderGoods(newData);
+  //Возможно калькулятор сюда.
+};
+
 const fillFormWithData = async (item) => {
   const id = document.querySelector("#item-id");
 
@@ -50,8 +57,6 @@ const fillFormWithData = async (item) => {
   formCount.value = item.count;
   formPrice.value = item.price;
   id.value = item.id;
-
-  console.log("while editing status: " + isEditing);
 };
 
 //fetchData(renderGoods);
@@ -106,13 +111,6 @@ const modalClose = document
     closeModalControl();
   });
 
-export const fetchAndRender = async() => {
-  setDataAvailable(true);
-  const newData = await fetchData();
-  await renderGoods(newData);
-  //Возможно калькулятор сюда.
-}
-
 function openImageInNewWindow(url) {
   const screenWidth = window.screen.width;
   const screenHeight = window.screen.height;
@@ -149,7 +147,7 @@ const goodTableWrapper = document
 
       try {
         const goods = await getGoods(id);
-        console.log(goods);
+
         isEditing = true;
         form.classList.add("active");
 
@@ -194,13 +192,11 @@ const modalCheckbox = document
     }
   });
 
-  const a = document.querySelector('.modal__submit');
-  console.log(a);
+const a = document.querySelector(".modal__submit");
 
 const formControl = (form) => {
   form.addEventListener("submit", async () => {
     if (isEditing === false) {
-      console.log("createNewPosition");
       let itemID = generateRandomId();
       const newItem = {
         title: formName.value,
@@ -212,12 +208,11 @@ const formControl = (form) => {
         discount: formDiscount.value,
         id: itemID,
       };
-      console.log(newItem.title);
+
       await postData(newItem);
-    } else {
-      console.log('sdfsdfsdfsd');
+    } else if (isEditing) {
       const id = document.querySelector("#item-id").textContent;
-      console.log(id);
+
       const updatedItem = {
         title: formName.value,
         category: formCategory.value,
@@ -229,25 +224,15 @@ const formControl = (form) => {
         id: Number(id),
       };
       await updateGoods(updatedItem);
-      // fetchData().then((data) => renderGoods(data));
-      // const newData = fetchData();
-      // console.log(newData);
-      // //renderGoods(newData);
-
-
-      //console.log("Данные успешно обновлены:", updatedData);
     }
     await fetchAndRender();
-      // const updatedData = await fetchData();
-      // renderGoods(updatedData);
-      //fetchData().then((data) => renderGoods(data));
+
     calculateFormTotal();
-    updateTotalSum();
     form.reset();
     closeModalControl();
     document
-    .querySelector(".modal__submit")
-    .addEventListener("click", closeModalControl());
+      .querySelector(".modal__submit")
+      .addEventListener("click", closeModalControl());
   });
 
   form.addEventListener("focusout", (e) => {

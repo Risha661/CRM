@@ -1,4 +1,3 @@
-import { calculateTableTotalPrice } from "./calculate.js";
 import { goods } from "./goodsMassive.js";
 
 export const overlayActive = document
@@ -16,8 +15,6 @@ export const obj = {
 };
 
 export const vendorCode = document.querySelector(".vendor-code__id");
-
-export const totalSumColumn = calculateTableTotalPrice(goods);
 
 export const btnAdd = document.querySelector(".panel__add-goods");
 
