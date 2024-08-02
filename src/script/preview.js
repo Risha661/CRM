@@ -1,5 +1,5 @@
-import "./control.js";
-import { apiURL } from "./control.js";
+import "./control";
+import { apiURL } from "./control";
 
 const imagePreview = document.createElement("img");
 const modalFieldSet = document.querySelector(".modal__fieldset");

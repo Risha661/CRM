@@ -1,5 +1,5 @@
-import { apiURL, URL } from "./control.js";
-// import { displayErrorMessages } from "./error.js";
+import { apiURL, URL } from "./control";
+// import { displayErrorMessages } from "./error";
 
 let apiCurrentPage = 1;
 export function setApiCurrentPage(val) {

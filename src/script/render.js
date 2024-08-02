@@ -1,5 +1,7 @@
 //import { allGoods } from "./api.js";
-import { displayErrorMessages } from "./error.js";
+import { displayErrorMessages } from "./error";
+
+import image from '../img/pic.svg';
 
 let renderPage = 1;
 export function setRenderPage(value) {
@@ -77,7 +79,7 @@ export const renderGoods = async (allGoods) => {
         }">
             <img alt="https://smooth-local-bread.glitch.me/${
               item.image
-            }" src="../img/pic.svg" class="table__img" />
+            }" src="${image}" class="table__img" />
           </button>
           <button class="table__btn table__btn_edit" id="edit"></button>
           <button class="table__btn table__btn_del"></button>

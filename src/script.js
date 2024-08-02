@@ -7,24 +7,32 @@ import {
   price,
   discount,
   modalTotalPrice,
-  cmsTotalPrice,
   form,
-} from "./modules/const.js";
+} from "./script/const";
 
-import { fetchAndRender } from "./modules/control.js";
+import { generateRandomId } from "./script/generate";
+import { formControl } from "./script/control";
+import { vendorCode } from "./script/const";
+import { setEditingState } from "./script/control";
+import "./script/preview";
+import "./script/error";
 
-import { generateRandomId } from "./modules/generate.js";
+import './scss/index.scss';
 
-import { formControl } from "./modules/control.js";
+import './css/cms.css';
+import './css/default.css';
+import './css/fonts.css';
+import './css/goods.css';
+import './css/index.css';
+import './css/modal.css';
+import './css/normalize.css';
+import './css/overlay.css';
+import './css/panel.css';
+import './css/sub-panel.css';
+import './css/table.css';
+import './css/vendor-code.css';
 
-import { goods } from "./modules/goodsMassive.js";
 
-import { vendorCode } from "./modules/const.js";
-
-import { getEditingState, setEditingState } from "./modules/control.js";
-
-import "./modules/preview.js";
-import "./modules/error.js";
 
 (function init() {
   document.querySelector(".overlay").classList.remove("active");

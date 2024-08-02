@@ -1,4 +1,4 @@
-import { modalTotalPrice } from "./const.js";
+import { modalTotalPrice } from "./const";
 
 const totalTableSpan = document.querySelector(".cms__total-price");
 let totalPrice = 0;

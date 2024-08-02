@@ -1,5 +1,3 @@
-import { goods } from "./goodsMassive.js";
-
 export const overlayActive = document
   .querySelector(".overlay")
   .classList.remove("active");

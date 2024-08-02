@@ -1,11 +1,11 @@
-import "./const.js";
-import "./preview.js";
-import { calculateFormTotal, globalTotalPrice } from "./calculate.js";
-import "./generate.js";
-import { generateRandomId } from "./generate.js";
-import { renderGoods } from "./render.js";
-import { displayErrorMessages } from "./error.js";
-import { setDataAvailable, getGoodsCategory } from "./api.js";
+import "./const";
+import "./preview";
+import { calculateFormTotal, globalTotalPrice } from "./calculate";
+import "./generate";
+import { generateRandomId } from "./generate";
+import { renderGoods } from "./render";
+import { displayErrorMessages } from "./error";
+import { setDataAvailable, getGoodsCategory } from "./api";
 
 import {
   fetchData,
@@ -15,7 +15,7 @@ import {
   postData,
   deleteData,
   getGoodCategoryInput,
-} from "./api.js";
+} from "./api";
 
 const inputFile = document.querySelector(".modal__file");
 
