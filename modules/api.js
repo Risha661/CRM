@@ -1,47 +1,38 @@
 import { apiURL, URL } from "./control.js";
+// import { displayErrorMessages } from "./error.js";
 
-//export let allGoods = [];
 let apiCurrentPage = 1;
 export function setApiCurrentPage(val) {
   apiCurrentPage = val;
 }
 let dataAvailable = true;
-export function setDataAvailable(val){
+export function setDataAvailable(val) {
   dataAvailable = val;
 }
 
 const simpleGetRequest = async (page) => {
   try {
-    console.log(`${apiURL}/api/goods?page=${page}`);
-
-  const response = await fetch(
-    `${apiURL}/api/goods?page=${page}`,
-    {
+    const response = await fetch(`${apiURL}/api/goods?page=${page}`, {
       method: "GET",
-    }
-  );
+    });
 
-  if (!response.ok) {
-    throw new Error(
-      `Ошибка сети: ${response.status} ${response.statusText}`
+    if (!response.ok) {
+      throw new Error(`Ошибка сети: ${response.status} ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Произошла ошибка при загрузке данных:", error.message);
+    displayErrorMessages(
+      "Не удалось загрузить данные. Пожалуйста, попробуйте позже."
     );
+    return null;
   }
-  const data = await response.json();
-  return data;
-} catch (error) {
-  console.error("Произошла ошибка при загрузке данных:", error.message);
-  displayErrorMessages(
-    "Не удалось загрузить данные. Пожалуйста, попробуйте позже."
-  );
-  return null;
-}
-}
+};
 
 export const fetchData = async () => {
-  console.log ('вызов фетчДата')
   let allGoods = [];
   while (dataAvailable) {
-    console.log ("номер стр " + apiCurrentPage)
     let dataGet = await simpleGetRequest(apiCurrentPage);
     if (dataGet.goods && dataGet.goods.length > 0) {
       allGoods = allGoods.concat(dataGet.goods);
@@ -51,13 +42,11 @@ export const fetchData = async () => {
     }
   }
   apiCurrentPage = 1;
-  console.log(allGoods);
   return allGoods;
 };
 
 export const updateGoods = async (item) => {
   try {
-    console.log("in patch" + item.id)
     const response = await fetch(`${apiURL}/api/goods/${item.id}`, {
       method: "PATCH",
       headers: {
@@ -66,7 +55,6 @@ export const updateGoods = async (item) => {
       body: JSON.stringify(item),
     });
 
-    console.log('json Patch' + JSON.stringify(item));
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || "Failed to update goods");
@@ -99,6 +87,28 @@ export const getGoodsName = async (name) => {
     });
     if (!response.ok) {
       const errorData = await response.json();
+    }
+    const data = await response.json();
+
+    if (!data.goods || data.goods.length === 0) {
+      const errorData = await response.json();
+    }
+    return data.goods;
+  } catch (error) {
+    displayErrorMessages(error.message);
+  }
+};
+
+export const getGoodCategoryInput = async (category) => {
+  try {
+    const response = await fetch(
+      `${apiURL}/api/goods/category?search=${category}`,
+      {
+        method: "GET",
+      }
+    );
+    if (!response.ok) {
+      const errorData = await response.json();
       throw new Error(
         errorData.message || "Не удалось найти товар с таким наименованием"
       );
@@ -117,8 +127,7 @@ export const getGoodsName = async (name) => {
 
 export const postData = async (newItem) => {
   try {
-    console.log('tryPostData');
-    const response = await fetch(`${apiURL}/api/goods/`, {
+    const response = await fetch(`${apiURL}/api/goods`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -126,11 +135,9 @@ export const postData = async (newItem) => {
       body: JSON.stringify(newItem),
     });
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Что-то пошло не так...");
+      throw new Error("Что-то пошло не так... " + response.statusText);
     }
     const data = await response.json();
-    console.log(data);
     return data;
   } catch (error) {
     displayErrorMessages(error.message);
@@ -154,7 +161,7 @@ export const deleteData = async (id) => {
 };
 
 export const getGoodsCategory = async (categories) => {
-  const apiURL = "https://thoracic-marbled-paneer.glitch.me";
+  const apiURL = "https://smooth-local-bread.glitch.me";
   try {
     const response = await fetch(`${apiURL}/api/categories`);
     if (!response.ok) {
@@ -162,6 +169,7 @@ export const getGoodsCategory = async (categories) => {
     }
     const categories = await response.json();
     populateDatalist(categories);
+    return categories;
   } catch (error) {
     console.error(error);
   }
@@ -186,7 +194,9 @@ export const fetchTotalGoods = async (total) => {
     });
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || "Не удалось получить общую сумму товаров");
+      throw new Error(
+        errorData.message || "Не удалось получить общую сумму товаров"
+      );
     }
     const result = await response.json();
     return result;
@@ -194,4 +204,3 @@ export const fetchTotalGoods = async (total) => {
     displayErrorMessages(error.message);
   }
 };
-

@@ -25,7 +25,6 @@ import { getEditingState, setEditingState } from "./modules/control.js";
 
 import "./modules/preview.js";
 import "./modules/error.js";
-import { fetchData } from "./modules/api.js";
 
 (function init() {
   document.querySelector(".overlay").classList.remove("active");
@@ -59,10 +58,4 @@ import { fetchData } from "./modules/api.js";
   modalTotalPrice.textContent = "$ 0.00";
 
   formControl(form, true);
-  //fetchData().then((data) => renderGoods(data));
-  //fetchAndRender();
-
-  // const data = fetchData();
-  // renderGoods(data);
-  //updateTotalSum();
 })();

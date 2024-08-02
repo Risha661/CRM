@@ -1,6 +1,5 @@
 //import { allGoods } from "./api.js";
 import { displayErrorMessages } from "./error.js";
-import { globalTotalPrice } from "./calculate.js";
 
 let renderPage = 1;
 export function setRenderPage(value) {
@@ -67,12 +66,16 @@ export const renderGoods = async (allGoods) => {
         <td class="table__cell">${item.category}</td>
         <td class="table__cell">${item.units}</td>
         <td class="table__cell">${item.count}</td>
-        <td class="table__cell">$${item.price*(1-item.discount/100)*item.count}</td>
+        <td class="table__cell">$${(
+          item.price *
+          (1 - item.discount / 100) *
+          item.count
+        ).toFixed(2)}</td>
         <td class="table__cell table__cell_btn-wrapper">
-        <button class="table__btn table__btn_pic" data-pic="https://thoracic-marbled-paneer.glitch.me/${
+        <button class="table__btn table__btn_pic" data-pic="https://smooth-local-bread.glitch.me/${
           item.image
         }">
-            <img alt="https://thoracic-marbled-paneer.glitch.me/${
+            <img alt="https://smooth-local-bread.glitch.me/${
               item.image
             }" src="../img/pic.svg" class="table__img" />
           </button>
@@ -80,7 +83,6 @@ export const renderGoods = async (allGoods) => {
           <button class="table__btn table__btn_del"></button>
         </td>`;
       table.appendChild(cardWrapper);
-      //globalTotalPrice();
     });
   } else {
     displayErrorMessages("Ошибка: Данные не найдены.");

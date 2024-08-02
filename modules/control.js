@@ -4,9 +4,8 @@ import { calculateFormTotal, globalTotalPrice } from "./calculate.js";
 import "./generate.js";
 import { generateRandomId } from "./generate.js";
 import { renderGoods } from "./render.js";
-import { setRenderPage } from "./render.js";
 import { displayErrorMessages } from "./error.js";
-import { setDataAvailable } from "./api.js";
+import { setDataAvailable, getGoodsCategory } from "./api.js";
 
 import {
   fetchData,
@@ -15,10 +14,22 @@ import {
   getGoodsName,
   postData,
   deleteData,
+  getGoodCategoryInput,
 } from "./api.js";
 
-export const apiURL = "https://blushing-motley-language.glitch.me";
-export const URL = "https://blushing-motley-language.glitch.me/api/goods";
+const inputFile = document.querySelector(".modal__file");
+
+const toBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+};
+
+export const apiURL = "https://smooth-local-bread.glitch.me";
+export const URL = "https://smooth-local-bread.glitch.me/api/goods";
 let isEditing = false;
 export function getEditingState() {
   return isEditing;
@@ -28,6 +39,7 @@ export function setEditingState(value) {
 }
 
 let idForEdit = 0;
+let timeoutId;
 
 const searchInput = document.querySelector(".panel__input");
 const form = document.querySelector(".overlay");
@@ -39,16 +51,11 @@ const formDescription = document.getElementById("description");
 const formCount = document.getElementById("count");
 const formPrice = document.getElementById("price");
 
-let timeoutId;
-
 export const fetchAndRender = async () => {
   setDataAvailable(true);
   const newData = await fetchData();
-  console.log("newDataFromFaR" + newData.length);
   await renderGoods(newData);
   globalTotalPrice(newData);
-  //Возможно калькулятор сюда.
-
 };
 
 const fillFormWithData = async (item) => {
@@ -64,30 +71,42 @@ const fillFormWithData = async (item) => {
   id.value = item.id;
 };
 
-//fetchData(renderGoods);
-
-searchInput.addEventListener("input", (e) => {
+searchInput.addEventListener("input", async (e) => {
   e.preventDefault();
-  const name = e.target.value.trim();
+
   clearTimeout(timeoutId);
 
   timeoutId = setTimeout(async () => {
-    if (name) {
-      try {
-        const goods = await getGoodsName(name);
-        renderGoods(goods);
-      } catch (error) {
-        displayErrorMessages(
-          "По данному запросу товары не найдены. Введите корректный запрос."
-        );
+    const name = e.target.value.trim();
+
+    if (name.length === 0) {
+      fetchAndRender();
+      return;
+    }
+
+    try {
+      const globalCategories = await getGoodsCategory();
+
+      let isCategory = false;
+
+      globalCategories.forEach((category) => {
+        if (category.toLowerCase() === name.toLowerCase()) {
+          isCategory = true;
+        }
+      });
+
+      if (isCategory) {
+        const categoriesData = await getGoodCategoryInput(name);
+        renderGoods(categoriesData);
+      } else {
+        const nameData = await getGoodsName(name);
+        renderGoods(nameData);
       }
-    } else {
-      try {
-        const dataGoods = await fetchData();
-        renderGoods(dataGoods);
-      } catch (error) {
-        displayErrorMessages("Товары не найдены.");
-      }
+    } catch (error) {
+      console.error(error);
+      displayErrorMessages(
+        "По данному запросу товары не найдены. Введите корректный запрос."
+      );
     }
   }, 300);
 });
@@ -95,20 +114,6 @@ searchInput.addEventListener("input", (e) => {
 const closeModalControl = () => {
   document.querySelector(".overlay").classList.remove("active");
 };
-
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  //   const formData = new FormData(form);
-  //   const data = Object.fromEntries(formData);
-  //   data.image = await toBase64(data.image);
-  //   fetch(URL, {
-  //     method: "post",
-  //     body: JSON.stringify(data),
-  //     headers: {
-  //       "Content-type": "application/json; charset=UTF-8",
-  //     },
-  //   });
-});
 
 const modalClose = document
   .querySelector(".modal__close")
@@ -151,18 +156,19 @@ const goodTableWrapper = document
       const id = row.querySelector("#item-id").textContent;
 
       try {
-        const goods = await getGoods(id)
+        const goods = await getGoods(id);
+        console.log(goods);
         idForEdit = goods.id;
-
 
         isEditing = true;
         form.classList.add("active");
 
         fillFormWithData(goods);
+        return goods;
       } catch (error) {
         console.error(error);
       }
-      return goods;
+
     }
 
     if (target.classList.contains("table__img")) {
@@ -173,8 +179,7 @@ const goodTableWrapper = document
         const imageUrl = target.getAttribute("alt");
 
         if (
-          imageUrl ===
-          "https://blushing-motley-language.glitch.me/image/notimage.jpg"
+          imageUrl === "https://smooth-local-bread.glitch.me/image/notimage.jpg"
         ) {
           displayErrorMessages("Ошибка: изображение не найдено.");
         } else if (imageUrl) {
@@ -203,7 +208,12 @@ const modalCheckbox = document
 const a = document.querySelector(".modal__submit");
 
 const formControl = (form) => {
-  form.addEventListener("submit", async () => {
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    data.image = await toBase64(data.image);
+
     if (isEditing === false) {
       let itemID = generateRandomId();
       const newItem = {
@@ -215,14 +225,12 @@ const formControl = (form) => {
         price: formPrice.value,
         discount: formDiscount.value,
         id: itemID,
+        image: data.image,
       };
 
       await postData(newItem);
     } else if (isEditing) {
-
       const id = idForEdit === 0 ? 0 : idForEdit;
-      //document.getElementById("item-id").textContent;
-      console.log(id);
 
       const updatedItem = {
         title: formName.value,
@@ -233,6 +241,7 @@ const formControl = (form) => {
         price: formPrice.value,
         discount: formDiscount.value,
         id: Number(id),
+        image: data.image,
       };
       await updateGoods(updatedItem);
       idForEdit = 0;
@@ -253,7 +262,7 @@ const formControl = (form) => {
       calculateFormTotal();
     }
   });
- fetchAndRender();
+  fetchAndRender();
 };
 
 export { closeModalControl, formControl };
