@@ -82,7 +82,7 @@ export const getGoods = async (itemId) => {
 
 export const getGoodsName = async (name) => {
   try {
-    const response = await fetch(`${apiURL}/api/goods?search=${name}`, {
+    const response = await fetch(`${apiURL}/api/goods/${name}`, {
       method: "GET",
     });
     if (!response.ok) {
@@ -102,11 +102,12 @@ export const getGoodsName = async (name) => {
 export const getGoodCategoryInput = async (category) => {
   try {
     const response = await fetch(
-      `${apiURL}/api/goods/category?search=${category}`,
+      `https://spangle-vintage-vacation.glitch.me/api/goods/category/%D0%98%D0%B3%D1%80%D1%83%D1%88%D0%BA%D0%B8`,
       {
         method: "GET",
       }
     );
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(
@@ -115,11 +116,11 @@ export const getGoodCategoryInput = async (category) => {
     }
     const data = await response.json();
 
-    if (!data.goods || data.goods.length === 0) {
+    if (!data || data.length === 0) {
       const errorData = await response.json();
       throw new Error(errorData.message || "Не удалось найти товары");
     }
-    return data.goods;
+    return data;
   } catch (error) {
     displayErrorMessages(error.message);
   }

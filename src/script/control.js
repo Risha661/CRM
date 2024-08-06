@@ -18,13 +18,15 @@ import {
 } from "./api";
 
 const inputFile = document.querySelector(".modal__file");
+const discount = document.querySelector(".modal__input_discount");
+console.log(discount);
 
 const toBase64 = (file) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
+    reader.onerror = (error) => reject(error);
   });
 };
 
@@ -87,7 +89,7 @@ searchInput.addEventListener("input", async (e) => {
     try {
       const globalCategories = await getGoodsCategory();
 
-      let isCategory = false;
+      let isCategory = true;
 
       globalCategories.forEach((category) => {
         if (category.toLowerCase() === name.toLowerCase()) {
@@ -97,6 +99,7 @@ searchInput.addEventListener("input", async (e) => {
 
       if (isCategory) {
         const categoriesData = await getGoodCategoryInput(name);
+        console.log("categoriesData", categoriesData);
         renderGoods(categoriesData);
       } else {
         const nameData = await getGoodsName(name);
@@ -113,6 +116,10 @@ searchInput.addEventListener("input", async (e) => {
 
 const closeModalControl = () => {
   document.querySelector(".overlay").classList.remove("active");
+  const overlayForm = document.querySelector(".overlay");
+  const modalOverlay = document.querySelector(".overlay__modal");
+  modalOverlay.style.display = "none";
+  overlayForm.style.display = "none";
 };
 
 const modalClose = document
@@ -154,6 +161,10 @@ const goodTableWrapper = document
     if (target.classList.contains("table__btn_edit")) {
       const row = target.closest("tr");
       const id = row.querySelector("#item-id").textContent;
+      const overlayForm = document.querySelector(".overlay");
+      const modalOverlay = document.querySelector(".overlay__modal");
+      modalOverlay.style.display = "block";
+      overlayForm.style.display = "block";
 
       try {
         const goods = await getGoods(id);
@@ -168,7 +179,6 @@ const goodTableWrapper = document
       } catch (error) {
         console.error(error);
       }
-
     }
 
     if (target.classList.contains("table__img")) {
@@ -179,7 +189,8 @@ const goodTableWrapper = document
         const imageUrl = target.getAttribute("alt");
 
         if (
-          imageUrl === "https://spangle-vintage-vacation.glitch.me/image/notimage.jpg"
+          imageUrl ===
+          "https://spangle-vintage-vacation.glitch.me/image/notimage.jpg"
         ) {
           displayErrorMessages("Ошибка: изображение не найдено.");
         } else if (imageUrl) {

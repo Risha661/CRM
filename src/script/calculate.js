@@ -36,7 +36,7 @@ export function globalTotalPrice(goodsForPrice) {
     }
   });
   globalPrice = totalDiscountPrice + itemPrice;
-  totalTableSpan.textContent = globalPrice;
+  totalTableSpan.textContent = globalPrice.toFixed(2);
 }
 
 export { calculateFormTotal };
