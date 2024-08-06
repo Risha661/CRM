@@ -41,8 +41,7 @@ import './css/vendor-code.css';
     setEditingState(false);
 
     overlayForm.classList.add("active");
-    const randomId = generateRandomId();
-    vendorCode.textContent = randomId;
+    overlayForm.style.display = 'block';
   });
 
   overlayForm.addEventListener("click", (e) => {

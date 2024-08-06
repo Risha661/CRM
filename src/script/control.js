@@ -28,8 +28,8 @@ const toBase64 = (file) => {
   });
 };
 
-export const apiURL = "https://smooth-local-bread.glitch.me";
-export const URL = "https://smooth-local-bread.glitch.me/api/goods";
+export const apiURL = "https://spangle-vintage-vacation.glitch.me";
+export const URL = "https://spangle-vintage-vacation.glitch.me/api/goods";
 let isEditing = false;
 export function getEditingState() {
   return isEditing;
@@ -179,7 +179,7 @@ const goodTableWrapper = document
         const imageUrl = target.getAttribute("alt");
 
         if (
-          imageUrl === "https://smooth-local-bread.glitch.me/image/notimage.jpg"
+          imageUrl === "https://spangle-vintage-vacation.glitch.me/image/notimage.jpg"
         ) {
           displayErrorMessages("Ошибка: изображение не найдено.");
         } else if (imageUrl) {

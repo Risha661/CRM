@@ -1,7 +1,6 @@
-//import { allGoods } from "./api.js";
 import { displayErrorMessages } from "./error";
 
-import image from '../img/pic.svg';
+import image from "../img/pic.svg";
 
 let renderPage = 1;
 export function setRenderPage(value) {
@@ -74,10 +73,10 @@ export const renderGoods = async (allGoods) => {
           item.count
         ).toFixed(2)}</td>
         <td class="table__cell table__cell_btn-wrapper">
-        <button class="table__btn table__btn_pic" data-pic="https://smooth-local-bread.glitch.me/${
+        <button class="table__btn table__btn_pic" data-pic="https://spangle-vintage-vacation.glitch.me/${
           item.image
         }">
-            <img alt="https://smooth-local-bread.glitch.me/${
+            <img alt="https://spangle-vintage-vacation.glitch.me/${
               item.image
             }" src="${image}" class="table__img" />
           </button>

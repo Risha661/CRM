@@ -161,7 +161,7 @@ export const deleteData = async (id) => {
 };
 
 export const getGoodsCategory = async (categories) => {
-  const apiURL = "https://smooth-local-bread.glitch.me";
+  const apiURL = "https://spangle-vintage-vacation.glitch.me";
   try {
     const response = await fetch(`${apiURL}/api/categories`);
     if (!response.ok) {

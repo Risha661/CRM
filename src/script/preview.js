@@ -1,25 +1,10 @@
 import "./control";
-import { apiURL } from "./control";
 
 const imagePreview = document.createElement("img");
 const modalFieldSet = document.querySelector(".modal__fieldset");
 imagePreview.classList.add("preview");
 
 const inputFile = document.querySelector(".modal__file");
-
-// export const toBase64 = (inputFile) =>
-//   new Promise((resolve, reject) => {
-//     const reader = new FileReader();
-//     reader.addEventListener("loadend", () => {
-//       resolve(reader.result);
-//     });
-
-//     reader.addEventListener("error", (err) => {
-//       reject(err);
-//     });
-
-//     reader.readAsDataURL(inputFile);
-//   });
 
 inputFile.addEventListener("change", async (e) => {
   e.preventDefault();
