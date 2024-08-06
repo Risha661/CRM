@@ -1,5 +1,5 @@
 import { apiURL, URL } from "./control";
-// import { displayErrorMessages } from "./error";
+import { displayErrorMessages } from "./error";
 
 let apiCurrentPage = 1;
 export function setApiCurrentPage(val) {
@@ -82,7 +82,7 @@ export const getGoods = async (itemId) => {
 
 export const getGoodsName = async (name) => {
   try {
-    const response = await fetch(`${apiURL}/api/goods/${name}`, {
+    const response = await fetch(`${apiURL}/api/goods?search=${name}`, {
       method: "GET",
     });
     if (!response.ok) {

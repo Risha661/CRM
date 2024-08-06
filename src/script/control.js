@@ -89,7 +89,7 @@ searchInput.addEventListener("input", async (e) => {
     try {
       const globalCategories = await getGoodsCategory();
 
-      let isCategory = true;
+      let isCategory = false;
 
       globalCategories.forEach((category) => {
         if (category.toLowerCase() === name.toLowerCase()) {
