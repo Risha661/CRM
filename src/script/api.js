@@ -102,7 +102,7 @@ export const getGoodsName = async (name) => {
 export const getGoodCategoryInput = async (category) => {
   try {
     const response = await fetch(
-      `https://spangle-vintage-vacation.glitch.me/api/goods/category/%D0%98%D0%B3%D1%80%D1%83%D1%88%D0%BA%D0%B8`,
+      `https://spangle-vintage-vacation.glitch.me/api/goods/category/${category}`,
       {
         method: "GET",
       }
